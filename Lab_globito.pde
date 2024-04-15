@@ -1,3 +1,11 @@
+import ddf.minim.*;
+import ddf.minim.analysis.*;
+import ddf.minim.effects.*;
+import ddf.minim.signals.*;
+import ddf.minim.spi.*;
+import ddf.minim.ugens.*;
+
+int mode = 0;
 
 int xpos = 0, ypos = 0, speed = 10;
 int sizex = 1800, sizey = 900;
@@ -10,7 +18,16 @@ PImage[] gif;
 int numberOffFrames;
 int f;
 
+Minim minim;
+AudioPlayer song;
+boolean music = true; // musica
+
 void setup(){
+  minim = new Minim(this);
+  song = minim.loadFile("song.mp3");
+  if (music){
+    song.play();
+  }
   size (1800, 900);
   background(0);
   backgroundImage = loadImage("2871269_6846 (1) (1).jpg");
@@ -22,17 +39,36 @@ void setup(){
     i++;
   }
   
+  
 }
 
 
 void draw(){
-  background (backgroundImage);
-  image(gif[f], xpos, ypos, 200, 200);   
-  frames();
-  movement();
-  moveRect();
+  switch(mode){
+    case 0:
+      drawMainMenu(); 
+      break;
+    case 1:
+      drawGame();
+      break;
+     default:
+       println("No deberias ver esto");
+       break;
+  }
   
   
+}
+
+void drawMainMenu(){
+
+}
+
+void drawGame(){
+    background (backgroundImage);
+    image(gif[f], xpos, ypos, 200, 200);   
+    frames();
+    movement();
+    moveRect();
 }
 
 void keyPressed(){
