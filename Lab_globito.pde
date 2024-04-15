@@ -1,6 +1,4 @@
-import processing.video.*;
 
-Movie movie;
 int xpos = 0, ypos = 0, speed = 10;
 int sizex = 1800, sizey = 900;
 int loon_size = 150;
@@ -8,29 +6,29 @@ boolean derecha = false, abajo = false;
 boolean izquierda = false, arriba = false;
 
 PImage backgroundImage;
+PImage[] gif;
+int numberOffFrames;
+int f;
 
 void setup(){
   size (1800, 900);
   background(0);
-  backgroundImage = loadImage("C:\\Users\\sddva\\OneDrive\\Documentos\\Processing\\sketch_240321a\\data\\2871269_6846 (1) (1).jpg");
-  movie = new Movie(this, "C:\\Users\\sddva\\OneDrive\\Documentos\\Processing\\sketch_240321a\\data\\Prueba globito.mp4");
-  movie.loop();
-
-
+  backgroundImage = loadImage("2871269_6846 (1) (1).jpg");
+  numberOffFrames = 9;
+  gif = new PImage[numberOffFrames];
+  int i = 0;
+  while (i < numberOffFrames){
+    gif[i] = loadImage("frame_"+i+"_delay-0.15s.gif");
+    i++;
+  }
+  
 }
 
-void movieEvent(Movie m) {
-  m.read();
-}
 
 void draw(){
   background (backgroundImage);
-  
-  if (movie.available() == true) {
-    movie.read(); 
-  }
-  image(movie, xpos, ypos, 150, 200);
-  
+  image(gif[f], xpos, ypos, 200, 200);   
+  frames();
   movement();
   moveRect();
   
@@ -91,6 +89,17 @@ void movement(){
 void moveRect(){
   xpos = constrain(xpos, 0, sizex-loon_size);
   ypos = constrain(ypos, 0, sizey-loon_size);
+  
+  
+}
+
+void frames(){
+  if(frameCount % 3 == 0){
+    f++;
+  }
+  if(f == numberOffFrames){
+    f = 0;
+  }
   
   
 }
