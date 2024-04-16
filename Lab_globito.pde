@@ -1,3 +1,4 @@
+
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
@@ -8,15 +9,16 @@ import ddf.minim.ugens.*;
 int white = 255, black = 0;  
 int hover = black;
 
-int mode = 0;
+int mode = 2;
 
 int xpos = 0, ypos = 0, speed = 10;
 int sizex = 1800, sizey = 900;
 int loon_size = 150;
+float volume;
 boolean derecha = false, abajo = false;
 boolean izquierda = false, arriba = false;
 
-PImage backgroundImage_game, backgroundImage_menu;
+PImage backgroundImage_game, backgroundImage_menu, resume_options, settings_options, play_options;
 PImage[] gif;
 PImage[] gif1;
 int numberOffFrames_loon, numberOffFrames_tittle;
@@ -34,8 +36,12 @@ void setup(){
     song.play();
   }
   size (1800, 900);
+  
   backgroundImage_menu = loadImage("menu2.jpeg");
   backgroundImage_game = loadImage("2871269_6846 (1) (1).jpg");
+  resume_options = loadImage("pause.png");
+  play_options = loadImage("play.png");
+  
   numberOffFrames_loon = 9;
   gif = new PImage[numberOffFrames_loon];
   
@@ -64,6 +70,9 @@ void draw(){
     case 1:
       drawGame();
       break;
+    case 2:
+      drawOptions();
+      break;
      default:
        println("No deberias ver esto");
        break;
@@ -81,7 +90,9 @@ void mousePressed() {
   } else if (mode == 1) {
     // Lógica del juego
   } else if (mode == 2) {
-    // Lógica para manejar las opciones del juego
+    if(mouseX > 775 && mouseX < 1025 && mouseY > 300 && mouseY < 400){
+      mode = 1;
+    }
   }
 }
 
@@ -121,6 +132,22 @@ void drawGame(){
     moveRect();
 }
 
+
+void drawOptions(){
+  background(#3a86ff);
+  fill(0, 150);
+  rect(0, 0, width, height);
+  fill(255);
+  rect(width/4, height/4, width/2, height/2);
+  fill(0);
+  textSize(20);
+  textAlign(CENTER, CENTER);
+  text("Menú de Opciones", width/2, height/4 + 30);
+  textSize(26);
+  image(resume_options, 400, 200, 120,100);
+  image(play_options, 775, 300, 250, 100);
+}
+
 void keyPressed(){
   if(keyCode == LEFT) {
     izquierda = true;
@@ -129,10 +156,13 @@ void keyPressed(){
     derecha = true;
   } 
   if(keyCode == UP) {
-    arriba = true;
+    arriba = true;  
   } 
   if(keyCode == DOWN) {
     abajo = true;
+  }
+  if(mode == 1 && keyCode == TAB){
+     mode = 2;
   }
   
   
