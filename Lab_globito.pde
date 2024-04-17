@@ -1,3 +1,4 @@
+Platform plat;
 
 import ddf.minim.*;
 import ddf.minim.analysis.*;
@@ -9,14 +10,17 @@ import ddf.minim.ugens.*;
 int white = 255, black = 0;  
 int hover = black;
 
+float gravity = 0.6, jumpForce = -15, Y_velocity = 0;
+boolean isJumping = false;
+
 int mode = 0;
 
 int xpos = 0, ypos = 0, speed = 10;
 int sizex = 1800, sizey = 900;
 int loon_size = 150;
 float volume = 10;
-boolean derecha = false, abajo = false;
-boolean izquierda = false, arriba = false;
+boolean derecha = false;
+boolean izquierda = false;
 
 PImage backgroundImage_game, backgroundImage_menu, resume_options, settings_options, play_options;
 PImage[] gif;
@@ -24,9 +28,12 @@ PImage[] gif1;
 int numberOffFrames_loon, numberOffFrames_tittle;
 int f;
 int i = 0;
+int p;
 
 Minim minim;
 AudioPlayer song;
+
+Platform[] platforms;
 
 void setup(){
   minim = new Minim(this);
@@ -54,6 +61,9 @@ void setup(){
     i++;
   }
   
+  platforms = new Platform[3];
+  platforms[1] = new Platform(300, height - 200, 200, 20, 255);
+  platforms[2] = new Platform(700, height - 300, 150, 20, 255);
   
 }
 
@@ -85,15 +95,15 @@ void mousePressed() {
       f=0;
     }
   } else if (mode == 1) {
-    // Lógica del juego
+     
   } else if (mode == 2) {
     if(mouseX > 775 && mouseX < 1025 && mouseY > 300 && mouseY < 400){
       mode = 1;
     }
     if (mouseX > 775 && mouseX < 1075 && mouseY > 450 && mouseY < 470 && mousePressed) {
-      volume = map(mouseX, 775, 1075, -50, 50); // Mapea la posición del mouse al volumen
-      volume = constrain(volume, -50, 50); // Asegura que el volumen esté dentro del rango permitido
-      song.setGain(volume); // Ajusta el volumen de la música
+      volume = map(mouseX, 775, 1075, -50, 50);
+      volume = constrain(volume, -50, 50); 
+      song.setGain(volume); 
     }
     if(volume < -45){
       song.mute();
@@ -136,7 +146,21 @@ void drawGame(){
     image(gif[f], xpos, ypos, 200, 200);   
     frames_loon();
     movement();
+    applyGravity();
     moveRect();
+    
+    for (p = 1; p < platforms.length; p++) {
+      Platform plat = platforms[p];
+      plat.drawPlatform();
+      
+       
+      if (ypos + 200 >= plat.getY() && ypos + 200 <= plat.getY() + plat.getHeight() && xpos + 150 >= plat.getX() && xpos <= plat.getX() + plat.getWidth()) {
+          ypos = plat.getY() - 200; 
+          Y_velocity = 0; 
+          isJumping = false; 
+      }
+    }
+    
 }
 
 
@@ -154,9 +178,9 @@ void drawOptions(){
   image(resume_options, 400, 200, 120,100);
   image(play_options, 775, 300, 250, 100);
   fill(#ff0a54);
-  rect(775, 450, 300, 20); // Barra
+  rect(775, 450, 300, 20); 
   fill(0, 255, 0);
-  rect(775, 450, map(volume, -50, 50, 0, 300), 20); // Indicador de volumen
+  rect(775, 450, map(volume, -50, 50, 0, 300), 20); 
 }
 
 void keyPressed(){
@@ -165,12 +189,10 @@ void keyPressed(){
   } 
   if(keyCode == RIGHT) {
     derecha = true;
-  } 
-  if(keyCode == UP) {
-    arriba = true;  
-  } 
-  if(keyCode == DOWN) {
-    abajo = true;
+  }
+  if(keyCode == UP && !isJumping) { 
+    Y_velocity = jumpForce; 
+    isJumping = true; 
   }
   if(mode == 1 && keyCode == TAB){
      mode = 2;
@@ -186,12 +208,6 @@ void keyReleased() {
   if(keyCode == RIGHT) {
     derecha = false;
   }
-  if(keyCode == UP) {
-    arriba = false;
-  } 
-  if(keyCode == DOWN) {
-    abajo = false;
-  }
   
   
 }
@@ -203,20 +219,18 @@ void movement(){
   if(derecha) {
     xpos += speed;
   }
-  if(arriba) {
-    ypos -= speed;
-  }
-  if(abajo) {
-    ypos += speed;
-  }
   
   
 }
 
 void moveRect(){
   xpos = constrain(xpos, 0, sizex-loon_size);
-  ypos = constrain(ypos, 0, sizey-loon_size);
-  
+  ypos = constrain(ypos, 0, sizey-loon_size-100);
+  if (ypos >= sizey - loon_size-100) {
+        ypos = sizey - loon_size-100; 
+        Y_velocity = 0; 
+        isJumping = false; 
+    }
   
 }
 
@@ -239,4 +253,14 @@ void frames_tittle(){
   }
   
   
+}
+
+void applyGravity(){
+  if (!isJumping && ypos >= sizey - loon_size) { 
+        isJumping = false; 
+        Y_velocity = 0; 
+    } else {
+        Y_velocity += gravity; 
+    }
+    ypos += Y_velocity; 
 }
