@@ -1,4 +1,6 @@
-Platform plat;
+Platform plat; 
+Enemies enemy;
+Projectile proj;
 
 import ddf.minim.*;
 import ddf.minim.analysis.*;
@@ -10,15 +12,20 @@ import ddf.minim.ugens.*;
 int white = 255, black = 0;  
 int hover = black;
 
-float gravity = 0.6, jumpForce = -15, Y_velocity = 0;
+float gravity = 1.2, jumpForce = -10, Y_velocity = 0;
+boolean spacePressed = false;
+int jumpHoldTime = 0;
+int maxJumpHoldTime = 10; 
+int maxJumpForce = -20; 
 boolean isJumping = false;
 
 int mode = 0;
 
-int xpos = 0, ypos = 0, speed = 10;
+float xpos = 0, ypos = 0;
+float speed = 10;
 int sizex = 1800, sizey = 900;
-int loon_size = 150;
-float volume = 10;
+int loon_size = 200;
+float volume = 0;
 boolean derecha = false;
 boolean izquierda = false;
 
@@ -29,11 +36,13 @@ int numberOffFrames_loon, numberOffFrames_tittle;
 int f;
 int i = 0;
 int p;
+int e;
 
 Minim minim;
 AudioPlayer song;
 
 Platform[] platforms;
+Enemies[] enemies;
 
 void setup(){
   minim = new Minim(this);
@@ -65,6 +74,9 @@ void setup(){
   platforms[1] = new Platform(300, height - 200, 200, 20, 255);
   platforms[2] = new Platform(700, height - 300, 150, 20, 255);
   
+  
+  enemies = new Enemies[2];
+  enemies[1] = new Enemies(900, height-400, 300, 5);
 }
 
 
@@ -143,16 +155,16 @@ void drawMainMenu(){
 
 void drawGame(){
     background (backgroundImage_game);
-    image(gif[f], xpos, ypos, 200, 200);   
+    image(gif[f], xpos, ypos, loon_size, loon_size);   
     frames_loon();
     movement();
+    applyJumpForce();
     applyGravity();
     moveRect();
     
     for (p = 1; p < platforms.length; p++) {
       Platform plat = platforms[p];
       plat.drawPlatform();
-      
        
       if (ypos + 200 >= plat.getY() && ypos + 200 <= plat.getY() + plat.getHeight() && xpos + 150 >= plat.getX() && xpos <= plat.getX() + plat.getWidth()) {
           ypos = plat.getY() - 200; 
@@ -160,6 +172,13 @@ void drawGame(){
           isJumping = false; 
       }
     }
+    
+    for (e = 1; e < enemies.length; e++) {
+      Enemies enemy = enemies[e];
+      enemy.display_enemy();
+      enemy.move();
+    }
+    
     
 }
 
@@ -190,9 +209,10 @@ void keyPressed(){
   if(keyCode == RIGHT) {
     derecha = true;
   }
-  if(keyCode == UP && !isJumping) { 
-    Y_velocity = jumpForce; 
+  if(key == ' ' && Y_velocity == 0) { 
+    spacePressed = true;
     isJumping = true; 
+    jumpHoldTime = 0;
   }
   if(mode == 1 && keyCode == TAB){
      mode = 2;
@@ -207,6 +227,9 @@ void keyReleased() {
   } 
   if(keyCode == RIGHT) {
     derecha = false;
+  }
+  if (key == ' ') {
+    spacePressed = false;
   }
   
   
@@ -253,6 +276,16 @@ void frames_tittle(){
   }
   
   
+}
+
+void applyJumpForce() {
+  if (isJumping) {
+    Y_velocity = jumpForce;
+    isJumping = false;
+  } else if (spacePressed && jumpHoldTime < maxJumpHoldTime) {
+    jumpHoldTime++;
+    Y_velocity = map(jumpHoldTime, 0, maxJumpHoldTime, jumpForce, maxJumpForce);
+  }
 }
 
 void applyGravity(){
