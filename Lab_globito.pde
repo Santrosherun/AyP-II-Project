@@ -9,12 +9,12 @@ import ddf.minim.ugens.*;
 int white = 255, black = 0;  
 int hover = black;
 
-int mode = 2;
+int mode = 0;
 
 int xpos = 0, ypos = 0, speed = 10;
 int sizex = 1800, sizey = 900;
 int loon_size = 150;
-float volume;
+float volume = 10;
 boolean derecha = false, abajo = false;
 boolean izquierda = false, arriba = false;
 
@@ -27,14 +27,10 @@ int i = 0;
 
 Minim minim;
 AudioPlayer song;
-boolean music = true; // musica
 
 void setup(){
   minim = new Minim(this);
   song = minim.loadFile("song.mp3");
-  if (music){
-    song.play();
-  }
   size (1800, 900);
   
   backgroundImage_menu = loadImage("menu2.jpeg");
@@ -63,6 +59,7 @@ void setup(){
 
 
 void draw(){
+  song.play();
   switch(mode){
     case 0:
       drawMainMenu(); 
@@ -93,7 +90,19 @@ void mousePressed() {
     if(mouseX > 775 && mouseX < 1025 && mouseY > 300 && mouseY < 400){
       mode = 1;
     }
+    if (mouseX > 775 && mouseX < 1075 && mouseY > 450 && mouseY < 470 && mousePressed) {
+      volume = map(mouseX, 775, 1075, -50, 50); // Mapea la posición del mouse al volumen
+      volume = constrain(volume, -50, 50); // Asegura que el volumen esté dentro del rango permitido
+      song.setGain(volume); // Ajusta el volumen de la música
+    }
+    if(volume < -45){
+      song.mute();
+    }else{
+      song.unmute();
+    }
+    
   }
+  
 }
 
 
@@ -104,9 +113,7 @@ void drawMainMenu(){
   
   fill(250);
   textSize(100);
-  text("Menú Principal", 70, 475);
-  
-  
+  text("Menú Principal", 70, 475);  
   fill(hover);
   if(mouseX > 45 && mouseX < 345 && mouseY > 500 && mouseY < 600){
     stroke(white);
@@ -146,6 +153,10 @@ void drawOptions(){
   textSize(26);
   image(resume_options, 400, 200, 120,100);
   image(play_options, 775, 300, 250, 100);
+  fill(#ff0a54);
+  rect(775, 450, 300, 20); // Barra
+  fill(0, 255, 0);
+  rect(775, 450, map(volume, -50, 50, 0, 300), 20); // Indicador de volumen
 }
 
 void keyPressed(){
