@@ -1,6 +1,7 @@
 Platform plat; 
 Enemies enemy;
 Projectile proj;
+Colissions coli;
 
 import ddf.minim.*;
 import ddf.minim.analysis.*;
@@ -18,7 +19,7 @@ int jumpHoldTime = 0;
 int maxJumpHoldTime = 10; 
 int maxJumpForce = -20; 
 boolean isJumping = false;
-
+float realColissionBoxMult = 0.2;
 int mode = 0;
 
 float xpos = 0, ypos = 0;
@@ -37,10 +38,14 @@ int f;
 int i = 0;
 int p;
 int e;
+int c;
 
 Minim minim;
 AudioPlayer song;
 
+
+Colissions playerColision;
+Colissions[] enemyColisions;
 Platform[] platforms;
 Enemies[] enemies;
 
@@ -77,6 +82,12 @@ void setup(){
   
   enemies = new Enemies[2];
   enemies[1] = new Enemies(900, height-400, 300, 5);
+  
+  playerColision = new Colissions(xpos, ypos, loon_size * realColissionBoxMult, loon_size * realColissionBoxMult);
+  enemyColisions = new Colissions[enemies.length + 1];
+  for (c = 1; c < enemies.length; c++) {
+    enemyColisions[c] = new Colissions(enemies[c].x, enemies[c].y, enemies[c].enemy_size * realColissionBoxMult, enemies[c].enemy_size * realColissionBoxMult);
+  }
 }
 
 
@@ -173,10 +184,17 @@ void drawGame(){
       }
     }
     
+    playerColision.x = xpos + 85;
+    playerColision.y = ypos + 70;
     for (e = 1; e < enemies.length; e++) {
       Enemies enemy = enemies[e];
       enemy.display_enemy();
       enemy.move();
+      enemyColisions[e].x = enemy.x + 125;
+      enemyColisions[e].y = enemy.y + 120;
+      if (playerColision.intersect(enemyColisions[e])) {
+        text("¡Colisión con enemigo!", 100, 100);
+      }
     }
     
     
