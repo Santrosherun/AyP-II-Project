@@ -29,16 +29,22 @@ int loon_size = 200;
 float volume = 0;
 boolean derecha = false;
 boolean izquierda = false;
+int playerHealth = 3, maxPlayerHealth = 3, heartWidth = 200;
+boolean isVulnereable = true;
+int vulnerableStartTime, vulnerableMaxDuration = 2000;
 
 PImage backgroundImage_game, backgroundImage_menu, resume_options, settings_options, play_options;
 PImage[] gif;
 PImage[] gif1;
+PImage heartFull, hearthit, heart2hit, heartEmpty;
+
 int numberOffFrames_loon, numberOffFrames_tittle;
 int f;
 int i = 0;
 int p;
 int e;
 int c;
+int im;
 
 Minim minim;
 AudioPlayer song;
@@ -75,6 +81,11 @@ void setup(){
     i++;
   }
   
+  heartFull = loadImage("heart(full).png");
+  hearthit = loadImage("heart(hit).png");
+  heart2hit = loadImage("heart(2hit).png");
+  heartEmpty = loadImage("heart(empty).png");
+  
   platforms = new Platform[3];
   platforms[1] = new Platform(300, height - 200, 200, 20, 255);
   platforms[2] = new Platform(700, height - 300, 150, 20, 255);
@@ -102,6 +113,9 @@ void draw(){
       break;
     case 2:
       drawOptions();
+      break;
+    case 3:
+      drawFailScreen();
       break;
      default:
        println("No deberias ver esto");
@@ -173,6 +187,17 @@ void drawGame(){
     applyGravity();
     moveRect();
     
+    if (maxPlayerHealth == playerHealth){
+      image (heartFull, 0, -30, 200, 200);
+    } else if (playerHealth == 2){
+      image(hearthit, 0, -30, 200, 200);
+    } else if (playerHealth == 1){
+      image(heart2hit, 0, -30, 200, 200);
+    } else {
+      image(heartEmpty, 0, -30, 200, 200);
+      mode = 3;
+    }
+       
     for (p = 1; p < platforms.length; p++) {
       Platform plat = platforms[p];
       plat.drawPlatform();
@@ -192,11 +217,16 @@ void drawGame(){
       enemy.move();
       enemyColisions[e].x = enemy.x + 125;
       enemyColisions[e].y = enemy.y + 120;
-      if (playerColision.intersect(enemyColisions[e])) {
-        text("¡Colisión con enemigo!", 100, 100);
+      if (playerColision.intersect(enemyColisions[e]) && isVulnereable) {
+        playerHealth = playerHealth - 1;
+        isVulnereable = false;
+        vulnerableStartTime = millis();
       }
     }
-    
+    if (!isVulnereable && millis() - vulnerableStartTime >= vulnerableMaxDuration) {
+    isVulnereable = true;
+  }
+
     
 }
 
@@ -218,6 +248,10 @@ void drawOptions(){
   rect(775, 450, 300, 20); 
   fill(0, 255, 0);
   rect(775, 450, map(volume, -50, 50, 0, 300), 20); 
+}
+
+void drawFailScreen(){
+  
 }
 
 void keyPressed(){
