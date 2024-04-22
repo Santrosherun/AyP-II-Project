@@ -23,7 +23,7 @@ float realColissionBoxMult = 0.2;
 int mode = 0;
 
 float xpos = 0, ypos = 0;
-float speed = 10;
+float speed = 5;
 int sizex = 1800, sizey = 900;
 int loon_size = 200;
 float volume = 0;
@@ -48,6 +48,8 @@ int c;
 int im;
 
 float backgroundX = 0;
+int startTime, elapsedTime, minutes, seconds, milliseconds, timePast, timePause;
+boolean isPaused = false;  
 
 Minim minim;
 AudioPlayer song;
@@ -143,12 +145,15 @@ void mousePressed() {
   if (mode == 0) {
     if(mouseX > 45 && mouseX < 345 && mouseY > 500 && mouseY < 600){
       mode = 1;
+      startTime = millis();
       f=0;
     }
   } else if (mode == 1) {
      
   } else if (mode == 2) {
     if(mouseX > 775 && mouseX < 1025 && mouseY > 300 && mouseY < 400){
+      isPaused = !isPaused;
+      startTime = timePause - timePast;
       mode = 1;
     }
     if (mouseX > 775 && mouseX < 1075 && mouseY > 450 && mouseY < 470 && mousePressed) {
@@ -193,8 +198,17 @@ void drawMainMenu(){
 }
 
 void drawGame(){
+    if(!isPaused){
+      timePast = millis() - startTime; // Solo actualiza el tiempo si el juego no está en pausa
+    }
+    minutes = int(timePast / (1000 * 60));
+    seconds = int((timePast / 1000) % 60);
+    milliseconds = timePast % 1000; 
     image(backgroundImage_game, backgroundX, 0);
-     moveBackground();
+    moveBackground();
+    fill(255);
+    textSize(50);
+    text(nf(minutes, 2) + ":" + nf(seconds, 2) + ":" + nf(milliseconds, 3), width - 260, 70); // nf() se utiliza para formatear los números y asegurarse de que tengan el número adecuado de dígitos
     if(show_loon){
       image(gif[f], xpos, ypos, loon_size, loon_size);   
     frames_loon();
@@ -262,6 +276,7 @@ void drawGame(){
 
 
 void drawOptions(){
+  timePause = millis();
   background(#3a86ff);
   fill(0, 150);
   rect(0, 0, width, height);
@@ -298,6 +313,7 @@ void keyPressed(){
   }
   if(mode == 1 && keyCode == TAB){
      mode = 2;
+     isPaused = !isPaused;
   }
   
   
@@ -394,9 +410,9 @@ void applyGravity(){
 void moveBackground() {
 
     if (derecha) {
-        backgroundX -= speed / 2;
+        backgroundX -= speed * 2;
     } else if (izquierda) {
-        backgroundX += speed / 2;
+        backgroundX += speed * 2;
     }
     backgroundX = constrain(backgroundX, -(backgroundImage_game.width - width), 0);
     image(backgroundImage_game, backgroundX, 0);
