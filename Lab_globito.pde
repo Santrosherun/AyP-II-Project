@@ -47,6 +47,8 @@ int e;
 int c;
 int im;
 
+float backgroundX = 0;
+
 Minim minim;
 AudioPlayer song;
 AudioPlayer dead_sound;
@@ -64,7 +66,7 @@ void setup(){
   size (1800, 900);
   
   backgroundImage_menu = loadImage("menu2.jpeg");
-  backgroundImage_game = loadImage("2871269_6846 (1) (1).jpg");
+  backgroundImage_game = loadImage("prueba_fondo.png");
   resume_options = loadImage("pause.png");
   play_options = loadImage("play.png");
   
@@ -191,7 +193,8 @@ void drawMainMenu(){
 }
 
 void drawGame(){
-    background (backgroundImage_game);
+    image(backgroundImage_game, backgroundX, 0);
+     moveBackground();
     if(show_loon){
       image(gif[f], xpos, ypos, loon_size, loon_size);   
     frames_loon();
@@ -220,7 +223,7 @@ void drawGame(){
       Platform plat = platforms[p];
       plat.drawPlatform();
        
-      if (ypos + loon_size >= plat.getY() && ypos + loon_size <= plat.getY() + plat.getHeight() && xpos + 100 >= plat.getX() && xpos + 90 <= plat.getX() + plat.getWidth()) {
+      if (ypos + loon_size >= plat.getY() && ypos + loon_size <= plat.getY() + plat.getHeight() && xpos - backgroundX + 100 >= plat.getX() && xpos - backgroundX + 90 <= plat.getX() + plat.getWidth()) {
           ypos = plat.getY() - 200; 
           Y_velocity = 0; 
           isJumping = false; 
@@ -233,8 +236,9 @@ void drawGame(){
       Enemies enemy = enemies[e];
       enemy.display_enemy();
       enemy.move();
-      enemyColisions[e].x = enemy.x + 125;
+      enemyColisions[e].x = enemy.x + backgroundX + 125;
       enemyColisions[e].y = enemy.y + 120;
+      
       if (playerColision.intersect(enemyColisions[e]) && isVulnereable) {
         playerHealth = playerHealth - 1;
         show_loon = false;
@@ -385,4 +389,16 @@ void applyGravity(){
         Y_velocity += gravity; 
     }
     ypos += Y_velocity; 
+}
+
+void moveBackground() {
+
+    if (derecha) {
+        backgroundX -= speed / 2;
+    } else if (izquierda) {
+        backgroundX += speed / 2;
+    }
+    backgroundX = constrain(backgroundX, -(backgroundImage_game.width - width), 0);
+    image(backgroundImage_game, backgroundX, 0);
+    
 }
