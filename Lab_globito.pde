@@ -1,4 +1,4 @@
-Platform plat; 
+Platform plat;  
 Enemies enemy;
 Projectile proj;
 Colissions coli;
@@ -30,15 +30,16 @@ float volume = 0;
 boolean derecha = false;
 boolean izquierda = false;
 int playerHealth = 3, maxPlayerHealth = 3, heartWidth = 200;
-boolean isVulnereable = true;
+boolean isVulnereable = true, show_loon = true, show_deadloon = false;
 int vulnerableStartTime, vulnerableMaxDuration = 2000;
 
 PImage backgroundImage_game, backgroundImage_menu, resume_options, settings_options, play_options;
 PImage[] gif;
 PImage[] gif1;
+PImage[] gifdead_loon;
 PImage heartFull, hearthit, heart2hit, heartEmpty;
 
-int numberOffFrames_loon, numberOffFrames_tittle;
+int numberOffFrames_loon, numberOffFrames_tittle, numberOffFrames_deadloon; 
 int f;
 int i = 0;
 int p;
@@ -48,6 +49,7 @@ int im;
 
 Minim minim;
 AudioPlayer song;
+AudioPlayer dead_sound;
 
 
 Colissions playerColision;
@@ -58,6 +60,7 @@ Enemies[] enemies;
 void setup(){
   minim = new Minim(this);
   song = minim.loadFile("song.mp3");
+  dead_sound = minim.loadFile("dead_sound.mp3");
   size (1800, 900);
   
   backgroundImage_menu = loadImage("menu2.jpeg");
@@ -80,6 +83,15 @@ void setup(){
     gif1[i] = loadImage("frame_"+i+"_delay-0.04s.gif");
     i++;
   }
+  i = 0;
+  numberOffFrames_deadloon = 8;
+  gifdead_loon = new PImage[numberOffFrames_deadloon];
+  
+  while(i < numberOffFrames_deadloon){
+    gifdead_loon[i] = loadImage("deadloon_"+i+".png");
+    i++;
+  }
+  
   
   heartFull = loadImage("heart(full).png");
   hearthit = loadImage("heart(hit).png");
@@ -180,8 +192,14 @@ void drawMainMenu(){
 
 void drawGame(){
     background (backgroundImage_game);
-    image(gif[f], xpos, ypos, loon_size, loon_size);   
+    if(show_loon){
+      image(gif[f], xpos, ypos, loon_size, loon_size);   
     frames_loon();
+    }
+    if(show_deadloon){
+      image(gifdead_loon[f], xpos, ypos, loon_size, loon_size);
+      frames_deadloon();
+    }
     movement();
     applyJumpForce();
     applyGravity();
@@ -202,7 +220,7 @@ void drawGame(){
       Platform plat = platforms[p];
       plat.drawPlatform();
        
-      if (ypos + 200 >= plat.getY() && ypos + 200 <= plat.getY() + plat.getHeight() && xpos + 150 >= plat.getX() && xpos <= plat.getX() + plat.getWidth()) {
+      if (ypos + loon_size >= plat.getY() && ypos + loon_size <= plat.getY() + plat.getHeight() && xpos + 100 >= plat.getX() && xpos + 90 <= plat.getX() + plat.getWidth()) {
           ypos = plat.getY() - 200; 
           Y_velocity = 0; 
           isJumping = false; 
@@ -219,12 +237,20 @@ void drawGame(){
       enemyColisions[e].y = enemy.y + 120;
       if (playerColision.intersect(enemyColisions[e]) && isVulnereable) {
         playerHealth = playerHealth - 1;
+        show_loon = false;
+        show_deadloon = true;
+        dead_sound.unmute();
         isVulnereable = false;
         vulnerableStartTime = millis();
+        f = 0;
+        dead_sound.play();
       }
     }
     if (!isVulnereable && millis() - vulnerableStartTime >= vulnerableMaxDuration) {
-    isVulnereable = true;
+      show_loon = true;
+      show_deadloon = false;
+      dead_sound.rewind();
+      isVulnereable = true;
   }
 
     
@@ -324,6 +350,17 @@ void frames_tittle(){
     f++;
   }
   if(f == numberOffFrames_tittle){
+    f = 0;
+  }
+  
+  
+}
+
+void frames_deadloon(){
+  if(frameCount % 18 == 0){
+    f++;
+  }
+  if(f == numberOffFrames_deadloon){
     f = 0;
   }
   
