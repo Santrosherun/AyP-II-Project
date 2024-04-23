@@ -7,6 +7,7 @@ class Enemies{
   float gravity = 0.8;
   float Y_velocity = 0;
   int jumpOcasionally = 50;
+  Projectile projectile;
   
   Enemies(float x_,float y_, int enemy_size_, float enemy_speed_){
     x = x_;
@@ -45,6 +46,38 @@ class Enemies{
   }
   
   void shootProjectile(){
-    // shoot projectile 
+    // Shoot projectile
+    if (projectile == null) {
+      // Solo dispara un proyectil si no hay uno en el aire
+      float direction = random(-1, 1);
+      float projectile_speedX = direction * random(5, 15); 
+      float projectile_speedY = -20;
+      float projectile_size = 80; 
+
+      // Crear un nuevo proyectil
+      projectile = new Projectile(x + enemy_size / 2 , y + enemy_size / 2, projectile_speedX, projectile_speedY, projectile_size);
+    }
+    
+ 
   }
+  
+  void moveProjectile() {
+    // Mover el proyectil si existe
+    if (projectile != null) {
+      projectile.move();
+
+      // Eliminar el proyectil si sale de la pantalla
+      if (projectile.y > 900) {
+        projectile = null;
+      }
+    }
+  }
+  
+  void displayProjectile() {
+    // Mostrar el proyectil si existe
+    if (projectile != null) {
+      projectile.display_projectile();
+    }
+  }
+  
 }
