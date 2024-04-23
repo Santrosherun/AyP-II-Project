@@ -55,7 +55,6 @@ Minim minim;
 AudioPlayer song;
 AudioPlayer dead_sound;
 
-
 Colissions playerColision;
 Colissions[] enemyColisions;
 Platform[] platforms;
@@ -107,8 +106,9 @@ void setup(){
   platforms[2] = new Platform(700, height - 300, 150, 20, 255);
   
   
-  enemies = new Enemies[2];
-  enemies[1] = new Enemies(900, height-400, 300, 5);
+  enemies = new Enemies[3];
+  enemies[1] = new Enemies(900, height-400, 300, 5, 0, 1800);
+  enemies[2] = new Enemies(1900, height-400, 300, 5, 1800, 3200);
   
   playerColision = new Colissions(xpos, ypos, loon_size * realColissionBoxMult, loon_size * realColissionBoxMult);
   enemyColisions = new Colissions[enemies.length + 1];
@@ -119,7 +119,7 @@ void setup(){
 
 
 void draw(){
-  song.play();
+  //song.play();
   switch(mode){
     case 0:
       drawMainMenu(); 
@@ -244,8 +244,14 @@ void drawGame(){
       }
     }
     
+    if (proj == null) {
+        // Crea el proyectil en la posición inicial y con la velocidad adecuada
+        proj = new Projectile(1000, 0, 10, 10, 70);
+    }
+    
     playerColision.x = xpos + 85;
     playerColision.y = ypos + 70;
+     
     for (e = 1; e < enemies.length; e++) {
       Enemies enemy = enemies[e];
       enemy.display_enemy();
