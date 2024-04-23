@@ -1,6 +1,7 @@
 
 
 class Enemies{
+  float limit_X, limit_Y;
   float x, y, enemy_speed;
   int enemy_size;
   PImage spike_enemy;
@@ -9,11 +10,13 @@ class Enemies{
   int jumpOcasionally = 50;
   Projectile projectile;
   
-  Enemies(float x_,float y_, int enemy_size_, float enemy_speed_){
+  Enemies(float x_,float y_, int enemy_size_, float enemy_speed_, float limit_X_, float limit_Y_){
     x = x_;
     y = y_;
     enemy_size = enemy_size_;
     enemy_speed = enemy_speed_;
+    limit_X = limit_X_;
+    limit_Y = limit_Y_;
     
     spike_enemy = loadImage("enemy(still).png");
   }
@@ -30,7 +33,7 @@ class Enemies{
       Y_velocity = 0;
     }
     
-    if (x <= 0 || x >= width - enemy_size) {
+    if (x <= limit_X || x >= limit_Y) { //modificar
       enemy_speed *= -1;
     }
     
@@ -50,7 +53,7 @@ class Enemies{
     if (projectile == null) {
       // Solo dispara un proyectil si no hay uno en el aire
       float direction = random(-1, 1);
-      float projectile_speedX = direction * random(5, 15); 
+      float projectile_speedX = direction * random(10, 5); 
       float projectile_speedY = -20;
       float projectile_size = 80; 
 
@@ -65,7 +68,6 @@ class Enemies{
     // Mover el proyectil si existe
     if (projectile != null) {
       projectile.move();
-
       // Eliminar el proyectil si sale de la pantalla
       if (projectile.y > 900) {
         projectile = null;
