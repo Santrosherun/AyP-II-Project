@@ -153,10 +153,10 @@ void mousePressed() {
   } else if (mode == 2) {
     if(mouseX > 775 && mouseX < 1025 && mouseY > 300 && mouseY < 400){
       isPaused = !isPaused;
-      startTime = timePause - timePast;
+      startTime = timePause - timePast; // Se le resta el tiempo en pausa al tiempo total 
       mode = 1;
     }
-    if (mouseX > 775 && mouseX < 1075 && mouseY > 450 && mouseY < 470 && mousePressed) {
+    if (mouseX > 775 && mouseX < 1075 && mouseY > 450 && mouseY < 490 && mousePressed) {
       volume = map(mouseX, 775, 1075, -50, 50);
       volume = constrain(volume, -50, 50); 
       song.setGain(volume); 
@@ -199,7 +199,7 @@ void drawMainMenu(){
 
 void drawGame(){
     if(!isPaused){
-      timePast = millis() - startTime; // Solo actualiza el tiempo si el juego no está en pausa
+      timePast = millis() - startTime; 
     }
     minutes = int(timePast / (1000 * 60));
     seconds = int((timePast / 1000) % 60);
@@ -250,6 +250,9 @@ void drawGame(){
       Enemies enemy = enemies[e];
       enemy.display_enemy();
       enemy.move();
+      enemy.shootProjectile(); // Lanza el proyectil
+      enemy.moveProjectile(); // Mueve el proyectil
+      enemy.displayProjectile(); // Muestra el proyectil
       enemyColisions[e].x = enemy.x + backgroundX + 125;
       enemyColisions[e].y = enemy.y + 120;
       
@@ -290,9 +293,9 @@ void drawOptions(){
   image(resume_options, 400, 200, 120,100);
   image(play_options, 775, 300, 250, 100);
   fill(#ff0a54);
-  rect(775, 450, 300, 20); 
+  rect(775, 450, 300, 40); 
   fill(0, 255, 0);
-  rect(775, 450, map(volume, -50, 50, 0, 300), 20); 
+  rect(775, 450, map(volume, -50, 50, 0, 300), 40); 
 }
 
 void drawFailScreen(){
