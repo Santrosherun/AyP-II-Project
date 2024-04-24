@@ -33,7 +33,8 @@ int playerHealth = 3, maxPlayerHealth = 3, heartWidth = 200;
 boolean isVulnereable = true, show_loon = true, show_deadloon = false;
 int vulnerableStartTime, vulnerableMaxDuration = 2000;
 
-PImage backgroundImage_game, backgroundImage_menu, optionsMainMenu, optionsSelector, resume_options, settings_options, play_options;
+PImage backgroundImage_game, backgroundImage_menu, optionsMainMenu, optionsSelector, optionTitle, howToPlay, htpLeft, htpRight, htpJump, htpCollect,
+goBack, resume_options, settings_options, play_options;
 PImage[] gif;
 PImage[] gif1;
 PImage[] gifdead_loon;
@@ -72,6 +73,13 @@ void setup(){
   play_options = loadImage("play.png");
   optionsMainMenu = loadImage("Main_menuOptions.png");
   optionsSelector = loadImage("selector.png");
+  optionTitle = loadImage("optionsTitle.png");
+  howToPlay = loadImage("howToPlay.png");
+  goBack = loadImage("goback.png");
+  htpLeft = loadImage("htpMoveLeft.png");
+  htpRight = loadImage("htpMoveRight.png");
+  htpJump = loadImage("htpJump.png");
+  htpCollect = loadImage("htpCollectHelium.png");
   
   numberOffFrames_loon = 9;
   gif = new PImage[numberOffFrames_loon];
@@ -122,6 +130,7 @@ void setup(){
 
 void draw(){
   song.play();
+  println("X"+mouseX + "Y"+mouseY);
   switch(mode){
     case 0:
       drawMainMenu(); 
@@ -139,6 +148,7 @@ void draw(){
       drawOptions();
       break;
     case 5:
+      drawHowToPlay();
       break;
      default:
        println("No deberias ver esto");
@@ -178,7 +188,16 @@ void mousePressed() {
     }
     
   } else if (mode == 4) {
-    
+    if(mouseX > 630 && mouseX < 1170 && mouseY > 720 && mouseY < 845){
+      mode = 0;
+    }
+    if(mouseX > 440 && mouseX < 1360 && mouseY > 415 && mouseY < 590){
+      mode = 5;
+    }
+  } else if (mode == 5) {
+    if(mouseX > 1320 && mouseX < 1780 && mouseY > 0 && mouseY < 100){
+      mode = 4;
+    }
   }
   
 }
@@ -200,7 +219,6 @@ void drawMainMenu(){
   if(mouseX > 85 && mouseX < 625 && mouseY > 705 && mouseY < 820){
     image(optionsSelector, 630, 685, 250 ,150);
   }
-   println("X"+mouseX + "Y"+mouseY);
   
 }
 void drawGame(){
@@ -291,7 +309,15 @@ void drawGame(){
 
 void drawOptions(){
   background(backgroundImage_menu);
-  image("");
+  image(optionTitle, 300, 60, 1200, 250);
+  image(howToPlay, 400, 350, 1000, 300);
+  if(mouseX > 440 && mouseX < 1360 && mouseY > 415 && mouseY < 590){
+    image(optionsSelector, 1360, 420, 250 ,150);
+  }
+  image(goBack, 600, 680, 600, 200);
+  if(mouseX > 630 && mouseX < 1170 && mouseY > 720 && mouseY < 845){
+    image(optionsSelector, 1180, 700, 250 ,150);
+  }
 }
 
 
@@ -313,6 +339,12 @@ void drawPause(){
   rect(775, 450, 300, 40); 
   fill(0, 255, 0);
   rect(775, 450, map(volume, -50, 50, 0, 300), 40); 
+}
+
+void drawHowToPlay() {
+  background(backgroundImage_menu);
+  image(howToPlay, 370, 40, 1100, 300);
+  image(goBack, 1300, 0, 500, 100);
 }
 
 void drawFailScreen(){
