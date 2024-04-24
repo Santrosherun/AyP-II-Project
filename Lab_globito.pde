@@ -33,7 +33,7 @@ int playerHealth = 3, maxPlayerHealth = 3, heartWidth = 200;
 boolean isVulnereable = true, show_loon = true, show_deadloon = false;
 int vulnerableStartTime, vulnerableMaxDuration = 2000;
 
-PImage backgroundImage_game, backgroundImage_menu, resume_options, settings_options, play_options;
+PImage backgroundImage_game, backgroundImage_menu, optionsMainMenu, optionsSelector, resume_options, settings_options, play_options;
 PImage[] gif;
 PImage[] gif1;
 PImage[] gifdead_loon;
@@ -66,10 +66,12 @@ void setup(){
   dead_sound = minim.loadFile("dead_sound.mp3");
   size (1800, 900);
   
-  backgroundImage_menu = loadImage("menu2.jpeg");
-  backgroundImage_game = loadImage("prueba_fondo.png");
+  backgroundImage_menu = loadImage("Main_menu.png");
+  backgroundImage_game = loadImage("Fondo.png");
   resume_options = loadImage("pause.png");
   play_options = loadImage("play.png");
+  optionsMainMenu = loadImage("Main_menuOptions.png");
+  optionsSelector = loadImage("selector.png");
   
   numberOffFrames_loon = 9;
   gif = new PImage[numberOffFrames_loon];
@@ -119,7 +121,7 @@ void setup(){
 
 
 void draw(){
-  //song.play();
+  song.play();
   switch(mode){
     case 0:
       drawMainMenu(); 
@@ -128,10 +130,15 @@ void draw(){
       drawGame();
       break;
     case 2:
-      drawOptions();
+      drawPause();
       break;
     case 3:
       drawFailScreen();
+      break;
+    case 4:
+      drawOptions();
+      break;
+    case 5:
       break;
      default:
        println("No deberias ver esto");
@@ -143,10 +150,13 @@ void draw(){
 void mousePressed() {
   // Detecta clics del mouse y realiza acciones según el estado del juego
   if (mode == 0) {
-    if(mouseX > 45 && mouseX < 345 && mouseY > 500 && mouseY < 600){
+    if(mouseX > 85 && mouseX < 405 && mouseY > 380 && mouseY < 490){
       mode = 1;
       startTime = millis();
       f=0;
+    }
+    if(mouseX > 85 && mouseX < 630 && mouseY > 545 && mouseY < 650){
+      mode = 4;
     }
   } else if (mode == 1) {
      
@@ -167,6 +177,8 @@ void mousePressed() {
       song.unmute();
     }
     
+  } else if (mode == 4) {
+    
   }
   
 }
@@ -174,29 +186,23 @@ void mousePressed() {
 
 void drawMainMenu(){
   background(backgroundImage_menu);
-  image(gif1[f], 700, 0, 800, 400);
+  image(gif1[f], 100, 0, 1600, 400);
   frames_tittle();
+  image(gif[1], 1100, 250, 500, 600);
+  image(optionsMainMenu, 60, 350, 600, 500);
   
-  fill(250);
-  textSize(100);
-  text("Menú Principal", 70, 475);  
-  fill(hover);
-  if(mouseX > 45 && mouseX < 345 && mouseY > 500 && mouseY < 600){
-    stroke(white);
-    strokeWeight(5);
-  } else {
-    stroke(black);
-    strokeWeight(5);
+  if(mouseX > 85 && mouseX < 405 && mouseY > 380 && mouseY < 490){
+    image(optionsSelector, 400, 365, 250 ,150);
   }
-  rect(45, 500, 300, 100);
-  fill(255);
-  text("Jugar", 70, 575);
+  if(mouseX > 85 && mouseX < 630 && mouseY > 545 && mouseY < 650){
+    image(optionsSelector, 630, 525, 250 ,150);
+  }
+  if(mouseX > 85 && mouseX < 625 && mouseY > 705 && mouseY < 820){
+    image(optionsSelector, 630, 685, 250 ,150);
+  }
+   println("X"+mouseX + "Y"+mouseY);
   
-  
-  fill(255);
-  text("Opciones", 70, 675);
 }
-
 void drawGame(){
     if(!isPaused){
       timePast = millis() - startTime; 
@@ -283,8 +289,13 @@ void drawGame(){
     
 }
 
-
 void drawOptions(){
+  background(backgroundImage_menu);
+  image("");
+}
+
+
+void drawPause(){
   timePause = millis();
   background(#3a86ff);
   fill(0, 150);
@@ -375,7 +386,7 @@ void frames_loon(){
   
 }
 void frames_tittle(){
-  if(frameCount % 3 == 0){
+  if(frameCount % 2 == 0){
     f++;
   }
   if(f == numberOffFrames_tittle){
