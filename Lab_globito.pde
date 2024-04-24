@@ -34,7 +34,7 @@ boolean isVulnereable = true, show_loon = true, show_deadloon = false;
 int vulnerableStartTime, vulnerableMaxDuration = 2000;
 
 PImage backgroundImage_game, backgroundImage_menu, optionsMainMenu, optionsSelector, optionTitle, howToPlay, htpLeft, htpRight, htpJump, htpCollect,
-goBack, resume_options, settings_options, play_options;
+htpPause, htpVolume, pauseQuitGame, goBack, resume_options, settings_options, play_options;
 PImage[] gif;
 PImage[] gif1;
 PImage[] gifdead_loon;
@@ -46,6 +46,7 @@ int i = 0;
 int p;
 int e;
 int c;
+int co , numeroDeMonedas = 3;
 int im;
 
 float backgroundX = 0;
@@ -60,6 +61,7 @@ Colissions playerColision;
 Colissions[] enemyColisions;
 Platform[] platforms;
 Enemies[] enemies;
+Coin[] coins;
 
 void setup(){
   minim = new Minim(this);
@@ -80,7 +82,9 @@ void setup(){
   htpRight = loadImage("htpMoveRight.png");
   htpJump = loadImage("htpJump.png");
   htpCollect = loadImage("htpCollectHelium.png");
-  
+  htpPause = loadImage("htpPause.png");
+  htpVolume = loadImage("htpVolume.png");
+  pauseQuitGame = loadImage("quitGame.png");
   numberOffFrames_loon = 9;
   gif = new PImage[numberOffFrames_loon];
   
@@ -125,6 +129,12 @@ void setup(){
   for (c = 1; c < enemies.length; c++) {
     enemyColisions[c] = new Colissions(enemies[c].x, enemies[c].y, enemies[c].enemy_size * realColissionBoxMult, enemies[c].enemy_size * realColissionBoxMult);
   }
+  coins = new Coin[numeroDeMonedas];
+  for (co = 1; co < numeroDeMonedas; co++) {
+        float x = random(200, 1800);
+        float y = random(500, 700);
+        coins[co] = new Coin(x, y, 100, 100);
+    }
 }
 
 
@@ -171,15 +181,19 @@ void mousePressed() {
   } else if (mode == 1) {
      
   } else if (mode == 2) {
-    if(mouseX > 775 && mouseX < 1025 && mouseY > 300 && mouseY < 400){
+    if(mouseX > 1320 && mouseX < 1780 && mouseY > 0 && mouseY < 100){
       isPaused = !isPaused;
       startTime = timePause - timePast; // Se le resta el tiempo en pausa al tiempo total 
       mode = 1;
     }
-    if (mouseX > 775 && mouseX < 1075 && mouseY > 450 && mouseY < 490 && mousePressed) {
-      volume = map(mouseX, 775, 1075, -50, 50);
+    if (mouseX > 750 && mouseX < 1050 && mouseY > 450 && mouseY < 490 && mousePressed) {
+      volume = map(mouseX, 750, 1050, -50, 50);
       volume = constrain(volume, -50, 50); 
       song.setGain(volume); 
+    }
+    if (mouseX > 715 && mouseX < 1080 && mouseY > 725 && mouseY < 820 && mousePressed) {
+      resetGame();
+      mode = 0;
     }
     if(volume < -45){
       song.mute();
@@ -257,6 +271,23 @@ void drawGame(){
       mode = 3;
     }
        
+    for (co = 1; co < coins.length; co++) {
+        Coin coin = coins[co];
+        if (!coin.isCollected) {
+            coin.drawCoin(); // Dibujar la moneda si no ha sido recolectada
+        }        
+    }
+    if (keyPressed && keyCode == UP) {
+      for (co = 1; co < coins.length; co++) {
+          Coin coin = coins[co];
+          if (!coin.isCollected && coin.checkCollision(xpos, ypos, loon_size * 0.4)) {
+              // Se ha detectado una colisión con la moneda, recolectarla
+              coin.isCollected = true;
+              // Incrementar el contador de monedas recolectadas
+              numeroDeMonedas++;
+          }
+      }
+    }
     for (p = 1; p < platforms.length; p++) {
       Platform plat = platforms[p];
       plat.drawPlatform();
@@ -323,28 +354,47 @@ void drawOptions(){
 
 void drawPause(){
   timePause = millis();
-  background(#3a86ff);
+  background(backgroundImage_menu);
+  
   fill(0, 150);
-  rect(0, 0, width, height);
-  fill(255);
-  rect(width/4, height/4, width/2, height/2);
-  fill(0);
-  textSize(20);
-  textAlign(CENTER, CENTER);
-  text("Menú de Opciones", width/2, height/4 + 30);
-  textSize(26);
-  image(resume_options, 400, 200, 120,100);
-  image(play_options, 775, 300, 250, 100);
+  rect(0, 0, width, height); // Blur baclground image
+  
+  image(goBack, 1300, 0, 500, 100);
+  image(htpPause, 600, 50, 600, 200);
+  image(htpVolume, 700, 300, 400, 150);
+  
   fill(#ff0a54);
-  rect(775, 450, 300, 40); 
+  rect(750, 450, 300, 40); 
   fill(0, 255, 0);
-  rect(775, 450, map(volume, -50, 50, 0, 300), 40); 
+  rect(750, 450, map(volume, -50, 50, 0, 300), 40); 
+
+  image(pauseQuitGame, 700, 700, 400, 150);
+  //image(resume_options, 400, 200, 120,100);
+  //image(play_options, 775, 300, 250, 100);
+
+}
+
+void resetGame() {
+  xpos = 0;
+  ypos = 0;
+  backgroundX = 0;
+  speed = 5;
+  Y_velocity = 0;
+  playerHealth = maxPlayerHealth;
+  startTime = millis();
+  isPaused = !isPaused;
 }
 
 void drawHowToPlay() {
   background(backgroundImage_menu);
   image(howToPlay, 370, 40, 1100, 300);
   image(goBack, 1300, 0, 500, 100);
+  image(htpCollect, 500, 300, 800, 150);
+  image(htpLeft, 100, 500, 400, 150);
+  image(htpRight, 1300, 490, 400, 150);
+  image(htpJump, 400, 750, 400, 150);
+  image(htpPause, 1000, 750, 400, 150);
+
 }
 
 void drawFailScreen(){
