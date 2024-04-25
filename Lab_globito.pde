@@ -23,7 +23,7 @@ float realColissionBoxMult = 0.2;
 int mode = 0;
 
 float xpos = 0, ypos = 0;
-float speed = 5;
+float speed = 4;
 int sizex = 1800, sizey = 900;
 int loon_size = 200;
 float volume = 0;
@@ -51,7 +51,10 @@ int im;
 
 float backgroundX = 0;
 int startTime, elapsedTime, minutes, seconds, milliseconds, timePast, timePause;
-boolean isPaused = false;  
+int increaseTime = 15, increaseTime_m = 15000, lastIncreaseTime; 
+boolean isRed = false;
+boolean isPaused = false; 
+boolean speedIncreased = false;
 
 Minim minim;
 AudioPlayer song;
@@ -85,6 +88,7 @@ void setup(){
   htpPause = loadImage("htpPause.png");
   htpVolume = loadImage("htpVolume.png");
   pauseQuitGame = loadImage("quitGame.png");
+  
   numberOffFrames_loon = 9;
   gif = new PImage[numberOffFrames_loon];
   
@@ -121,8 +125,8 @@ void setup(){
   
   
   enemies = new Enemies[3];
-  enemies[1] = new Enemies(900, height-400, 300, 5, 0, 1800);
-  enemies[2] = new Enemies(1900, height-400, 300, 5, 1800, 3200);
+  enemies[1] = new Enemies(900, height-400, 300, speed, 0, 1800);
+  enemies[2] = new Enemies(1900, height-400, 300, speed, 1800, 3200);
   
   playerColision = new Colissions(xpos, ypos, loon_size * realColissionBoxMult, loon_size * realColissionBoxMult);
   enemyColisions = new Colissions[enemies.length + 1];
@@ -135,12 +139,13 @@ void setup(){
         float y = random(500, 700);
         coins[co] = new Coin(x, y, 100, 100);
     }
+ 
 }
 
 
 void draw(){
   song.play();
-  println("X"+mouseX + "Y"+mouseY);
+  //println("X"+mouseX + "Y"+mouseY);
   switch(mode){
     case 0:
       drawMainMenu(); 
@@ -243,8 +248,24 @@ void drawGame(){
     seconds = int((timePast / 1000) % 60);
     milliseconds = timePast % 1000; 
     image(backgroundImage_game, backgroundX, 0);
-    moveBackground();
-    fill(255);
+    moveBackground(); 
+   
+    if (seconds % increaseTime == 0) {
+        isRed = !isRed;
+        if (isRed) {
+            fill(255, 0, 0);
+        } else {
+            fill(255); 
+        }
+    }
+    if (timePast >= lastIncreaseTime + increaseTime_m && !speedIncreased) {
+        speed += 1;
+        lastIncreaseTime = timePast;
+        speedIncreased = true;
+    } else if (timePast < lastIncreaseTime + increaseTime_m) {
+        speedIncreased = false;
+    }
+    
     textSize(50);
     text(nf(minutes, 2) + ":" + nf(seconds, 2) + ":" + nf(milliseconds, 3), width - 260, 70); // nf() se utiliza para formatear los números y asegurarse de que tengan el número adecuado de dígitos
     if(show_loon){
@@ -259,6 +280,11 @@ void drawGame(){
     applyJumpForce();
     applyGravity();
     moveRect();
+    
+    if (coinCounter >= 10 && maxPlayerHealth != playerHealth){
+        playerHealth = playerHealth + 1;
+        coinCounter = coinCounter - 10;
+    }
     
     if (maxPlayerHealth == playerHealth){
       image (heartFull, 0, -30, 200, 200);
