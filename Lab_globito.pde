@@ -46,7 +46,7 @@ int i = 0;
 int p;
 int e;
 int c;
-int co , numeroDeMonedas = 3;
+int co , numeroDeMonedas = 13, coinCounter = 0;
 int im;
 
 float backgroundX = 0;
@@ -131,7 +131,7 @@ void setup(){
   }
   coins = new Coin[numeroDeMonedas];
   for (co = 1; co < numeroDeMonedas; co++) {
-        float x = random(200, 1800);
+        float x = random(200, 8000);
         float y = random(500, 700);
         coins[co] = new Coin(x, y, 100, 100);
     }
@@ -284,10 +284,13 @@ void drawGame(){
               // Se ha detectado una colisión con la moneda, recolectarla
               coin.isCollected = true;
               // Incrementar el contador de monedas recolectadas
-              numeroDeMonedas++;
+              coinCounter = coinCounter + 1;
           }
       }
     }
+    fill(255);
+    textSize(35);
+    text("Monedas: " + coinCounter, 250, 70);
     for (p = 1; p < platforms.length; p++) {
       Platform plat = platforms[p];
       plat.drawPlatform();
@@ -383,6 +386,15 @@ void resetGame() {
   playerHealth = maxPlayerHealth;
   startTime = millis();
   isPaused = !isPaused;
+  
+  for (int co = 1; co < numeroDeMonedas; co++) {
+    float x = random(200, 1800);
+    float y = random(500, 700);
+    coins[co] = new Coin(x, y, 100, 100);
+  }
+  
+  coinCounter = 0;
+  
 }
 
 void drawHowToPlay() {
