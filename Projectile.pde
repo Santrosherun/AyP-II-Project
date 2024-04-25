@@ -30,6 +30,7 @@ class Projectile{
     
     if (proj != null && playerColision.intersect(collisionBox) && isVulnereable) {
         playerHealth = playerHealth - 1;
+        speed = 4;
         show_loon = false;
         show_deadloon = true;
         dead_sound.unmute();
