@@ -2,6 +2,7 @@ Platform plat;
 Enemies enemy;
 Projectile proj;
 Colissions coli;
+FanEnemy fan;
 
 import ddf.minim.*;
 import ddf.minim.analysis.*;
@@ -34,11 +35,12 @@ boolean isVulnereable = true, show_loon = true, show_deadloon = false;
 int vulnerableStartTime, vulnerableMaxDuration = 2000;
 
 PImage backgroundImage_game, backgroundImage_menu, optionsMainMenu, optionsSelector, optionTitle, howToPlay, htpLeft, htpRight, htpJump, htpCollect,
-htpPause, htpVolume, pauseQuitGame, goBack, resume_options, settings_options, play_options;
+htpPause, htpVolume, pauseQuitGame, goBack, gameOver, betterLNT, retryImage, arrowsImage, resume_options, settings_options, play_options;
 PImage[] gif;
 PImage[] gif1;
 PImage[] gifdead_loon;
 PImage heartFull, hearthit, heart2hit, heartEmpty;
+PImage fanLeftImage, fanRightImage; 
 
 int numberOffFrames_loon, numberOffFrames_tittle, numberOffFrames_deadloon; 
 int f;
@@ -56,6 +58,7 @@ boolean isRed = false;
 boolean isPaused = false; 
 boolean speedIncreased = false;
 
+
 Minim minim;
 AudioPlayer song;
 AudioPlayer dead_sound;
@@ -65,6 +68,7 @@ Colissions[] enemyColisions;
 Platform[] platforms;
 Enemies[] enemies;
 Coin[] coins;
+
 
 void setup(){
   minim = new Minim(this);
@@ -88,6 +92,12 @@ void setup(){
   htpPause = loadImage("htpPause.png");
   htpVolume = loadImage("htpVolume.png");
   pauseQuitGame = loadImage("quitGame.png");
+  gameOver = loadImage("gameOver.png");
+  betterLNT = loadImage("betterLNT.png");
+  retryImage = loadImage("retry.png");
+  arrowsImage = loadImage("arrows.png");
+  fanLeftImage = loadImage("fan_Left.png");
+  fanRightImage = loadImage("fan_Right.png");
   
   numberOffFrames_loon = 9;
   gif = new PImage[numberOffFrames_loon];
@@ -130,6 +140,9 @@ void setup(){
   
   playerColision = new Colissions(xpos, ypos, loon_size * realColissionBoxMult, loon_size * realColissionBoxMult);
   enemyColisions = new Colissions[enemies.length + 1];
+  
+  fan = new FanEnemy(900, 500, fanLeftImage, fanRightImage, 300, 3, true);
+  
   for (c = 1; c < enemies.length; c++) {
     enemyColisions[c] = new Colissions(enemies[c].x, enemies[c].y, enemies[c].enemy_size * realColissionBoxMult, enemies[c].enemy_size * realColissionBoxMult);
   }
@@ -146,6 +159,7 @@ void setup(){
 void draw(){
   song.play();
   //println("X"+mouseX + "Y"+mouseY);
+  //println("back"+abs(backgroundX));
   switch(mode){
     case 0:
       drawMainMenu(); 
@@ -240,6 +254,9 @@ void drawMainMenu(){
   }
   
 }
+
+
+
 void drawGame(){
     if(!isPaused){
       timePast = millis() - startTime; 
@@ -280,6 +297,9 @@ void drawGame(){
     applyJumpForce();
     applyGravity();
     moveRect();
+    
+    fan.display();
+    fan.applyWindEffect(xpos, ypos);
     
     if (coinCounter >= 10 && maxPlayerHealth != playerHealth){
         playerHealth = playerHealth + 1;
@@ -414,7 +434,7 @@ void resetGame() {
   isPaused = !isPaused;
   
   for (int co = 1; co < numeroDeMonedas; co++) {
-    float x = random(200, 1800);
+    float x = random(200, 8000);
     float y = random(500, 700);
     coins[co] = new Coin(x, y, 100, 100);
   }
@@ -428,10 +448,11 @@ void drawHowToPlay() {
   image(howToPlay, 370, 40, 1100, 300);
   image(goBack, 1300, 0, 500, 100);
   image(htpCollect, 500, 300, 800, 150);
-  image(htpLeft, 100, 500, 400, 150);
-  image(htpRight, 1300, 490, 400, 150);
+  image(htpLeft, 300, 550, 400, 150);
+  image(htpRight, 1100, 550, 400, 150);
   image(htpJump, 400, 750, 400, 150);
   image(htpPause, 1000, 750, 400, 150);
+  image(arrowsImage, 690, 360, 400, 400);
 
 }
 
@@ -485,7 +506,7 @@ void movement(){
 }
 
 void moveRect(){
-  xpos = constrain(xpos, 0, sizex-loon_size);
+  xpos = constrain(xpos, 0, sizex-loon_size - 600);
   ypos = constrain(ypos, 0, sizey-loon_size-100);
   if (ypos >= sizey - loon_size-100) {
         ypos = sizey - loon_size-100; 
