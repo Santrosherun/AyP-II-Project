@@ -28,16 +28,18 @@ class FanEnemy {
     
     void applyWindEffect(float playerX, float playerY) {
          if (isFacingRight){
-           image(gifwind[w], x + backgroundX + 250, y + 50, windRange, 200);
+           float windEffectX = x + backgroundX + 250;
+           image(gifwind[w], windEffectX, y + 50, windRange, 200);
            frames_Wind();
            if (playerX > x + backgroundX + 80 && playerX < x + backgroundX + 150 + windRange && playerY > y - 100 && playerY < y + 350){
              xpos = xpos + windForce;
              backgroundX = backgroundX - windForce;
            }
          } else {
-           image(gifwind[w], x + backgroundX - 250, y - 50, windRange, 350);
+           float windEffectX = x + backgroundX - windRange;
+           image(gifwind[w], windEffectX, y + 50, windRange + 50, 200);
            frames_Wind();
-           if(playerX > x + backgroundX - 400 && playerX < x + backgroundX - 320 + windRange && playerY > y - 100 && playerY < y + 350){
+           if(playerX > windEffectX - 100 && playerX < windEffectX + windRange && playerY > y - 100 && playerY < y + 350){
              xpos = xpos - windForce;
              backgroundX = backgroundX + windForce;
            }
