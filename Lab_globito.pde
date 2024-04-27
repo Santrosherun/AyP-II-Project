@@ -11,9 +11,6 @@ import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 
-int white = 255, black = 0;  
-int hover = black;
-
 float gravity = 1.2, jumpForce = -10, Y_velocity = 0;
 boolean spacePressed = false;
 int jumpHoldTime = 0;
@@ -39,17 +36,20 @@ htpPause, htpVolume, pauseQuitGame, goBack, gameOver, betterLNT, retryImage, arr
 PImage[] gif;
 PImage[] gif1;
 PImage[] gifdead_loon;
+PImage[] gifwind;
 PImage heartFull, hearthit, heart2hit, heartEmpty;
 PImage fanLeftImage, fanRightImage; 
 
-int numberOffFrames_loon, numberOffFrames_tittle, numberOffFrames_deadloon; 
+int numberOffFrames_loon, numberOffFrames_tittle, numberOffFrames_deadloon, numberOffFrames_Wind; 
 int f;
 int i = 0;
 int p;
 int e;
 int c;
-int co , numeroDeMonedas = 13, coinCounter = 0;
+int co , numeroDeMonedas = 51, coinCounter = 0;
 int im;
+int w;
+int fa;
 
 float backgroundX = 0;
 int startTime, elapsedTime, minutes, seconds, milliseconds, timePast, timePause;
@@ -68,7 +68,7 @@ Colissions[] enemyColisions;
 Platform[] platforms;
 Enemies[] enemies;
 Coin[] coins;
-
+FanEnemy[] fanenemies;
 
 void setup(){
   minim = new Minim(this);
@@ -122,6 +122,14 @@ void setup(){
     gifdead_loon[i] = loadImage("deadloon_"+i+".png");
     i++;
   }
+  i = 0;
+  numberOffFrames_Wind = 2;
+  gifwind = new PImage[numberOffFrames_Wind];
+  
+  while(i < numberOffFrames_Wind){
+    gifwind[i] = loadImage("wind_"+i+".png");
+    i++;
+  }
   
   
   heartFull = loadImage("heart(full).png");
@@ -141,14 +149,15 @@ void setup(){
   playerColision = new Colissions(xpos, ypos, loon_size * realColissionBoxMult, loon_size * realColissionBoxMult);
   enemyColisions = new Colissions[enemies.length + 1];
   
-  fan = new FanEnemy(900, 500, fanLeftImage, fanRightImage, 300, 3, true);
+  fanenemies = new FanEnemy[2];
+  fanenemies[1] = new FanEnemy(900, 500, fanLeftImage, fanRightImage, 300, 3, true);
   
   for (c = 1; c < enemies.length; c++) {
     enemyColisions[c] = new Colissions(enemies[c].x, enemies[c].y, enemies[c].enemy_size * realColissionBoxMult, enemies[c].enemy_size * realColissionBoxMult);
   }
   coins = new Coin[numeroDeMonedas];
   for (co = 1; co < numeroDeMonedas; co++) {
-        float x = random(200, 8000);
+        float x = random(600, 31400);
         float y = random(500, 700);
         coins[co] = new Coin(x, y, 100, 100);
     }
@@ -157,9 +166,9 @@ void setup(){
 
 
 void draw(){
-  song.play();
-  //println("X"+mouseX + "Y"+mouseY);
-  //println("back"+abs(backgroundX));
+  //song.play();
+  println("X"+mouseX + "Y"+mouseY);
+  println("back"+abs(backgroundX));
   switch(mode){
     case 0:
       drawMainMenu(); 
@@ -231,6 +240,16 @@ void mousePressed() {
     if(mouseX > 1320 && mouseX < 1780 && mouseY > 0 && mouseY < 100){
       mode = 4;
     }
+  } else if (mode == 3){
+    if (mouseX > 25 && mouseX < 520 && mouseY > 738 && mouseY < 890){
+      resetGame();
+      mode = 0;
+    }
+    if(mouseX > 1320 && mouseX < 1780 && mouseY > 738 && mouseY < 890){
+      resetGame();
+      mode = 1;
+    }
+     
   }
   
 }
@@ -276,7 +295,7 @@ void drawGame(){
         }
     }
     if (timePast >= lastIncreaseTime + increaseTime_m && !speedIncreased) {
-        speed += 1;
+        speed += 0.5;
         lastIncreaseTime = timePast;
         speedIncreased = true;
     } else if (timePast < lastIncreaseTime + increaseTime_m) {
@@ -298,8 +317,10 @@ void drawGame(){
     applyGravity();
     moveRect();
     
-    fan.display();
-    fan.applyWindEffect(xpos, ypos);
+    for (fa = 1; fa < fanenemies.length; fa++){
+      fanenemies[fa].display();
+      fanenemies[fa].applyWindEffect(xpos, ypos);
+    }
     
     if (coinCounter >= 10 && maxPlayerHealth != playerHealth){
         playerHealth = playerHealth + 1;
@@ -327,7 +348,7 @@ void drawGame(){
       for (co = 1; co < coins.length; co++) {
           Coin coin = coins[co];
           if (!coin.isCollected && coin.checkCollision(xpos, ypos, loon_size * 0.4)) {
-              // Se ha detectado una colisión con la moneda, recolectarla
+              // Se ha detectado una colisión con la moneda
               coin.isCollected = true;
               // Incrementar el contador de monedas recolectadas
               coinCounter = coinCounter + 1;
@@ -431,10 +452,9 @@ void resetGame() {
   Y_velocity = 0;
   playerHealth = maxPlayerHealth;
   startTime = millis();
-  isPaused = !isPaused;
   
   for (int co = 1; co < numeroDeMonedas; co++) {
-    float x = random(200, 8000);
+    float x = random(600, 31400);
     float y = random(500, 700);
     coins[co] = new Coin(x, y, 100, 100);
   }
@@ -457,7 +477,11 @@ void drawHowToPlay() {
 }
 
 void drawFailScreen(){
-  
+  background(backgroundImage_menu);
+  image(gameOver, 370, 200, 1100, 250);
+  image(betterLNT, 420, 350, 1000, 250);
+  image(pauseQuitGame, 0, 690, 550, 250);
+  image(retryImage, 1300, 700, 500, 200);
 }
 
 void keyPressed(){
@@ -506,7 +530,7 @@ void movement(){
 }
 
 void moveRect(){
-  xpos = constrain(xpos, 0, sizex-loon_size - 600);
+  xpos = constrain(xpos, 400, sizex-loon_size - 600);
   ypos = constrain(ypos, 0, sizey-loon_size-100);
   if (ypos >= sizey - loon_size-100) {
         ypos = sizey - loon_size-100; 
@@ -543,6 +567,17 @@ void frames_deadloon(){
   }
   if(f == numberOffFrames_deadloon){
     f = 0;
+  }
+  
+  
+}
+
+void frames_Wind(){
+  if(frameCount % 3 == 0){
+    w++;
+  }
+  if(w == numberOffFrames_Wind){
+    w = 0;
   }
   
   
