@@ -3,6 +3,7 @@ Enemies enemy;
 Projectile proj;
 Colissions coli;
 FanEnemy fan;
+SpecialCoin sCoin;
 
 import ddf.minim.*;
 import ddf.minim.analysis.*;
@@ -10,6 +11,8 @@ import ddf.minim.effects.*;
 import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
+
+int nofill = #00FF0000;
 
 float gravity = 1.2, jumpForce = -10, Y_velocity = 0;
 boolean spacePressed = false;
@@ -21,7 +24,7 @@ float realColissionBoxMult = 0.2;
 int mode = 0;
 
 float xpos = 0, ypos = 0;
-float speed = 4;
+float speed = 14;
 int sizex = 1800, sizey = 900;
 int loon_size = 200;
 float volume = 0;
@@ -50,6 +53,7 @@ int co , numeroDeMonedas = 51, coinCounter = 0;
 int im;
 int w;
 int fa;
+int sc;
 
 float backgroundX = 0;
 int startTime, elapsedTime, minutes, seconds, milliseconds, timePast, timePause;
@@ -69,6 +73,7 @@ Platform[] platforms;
 Enemies[] enemies;
 Coin[] coins;
 FanEnemy[] fanenemies;
+SpecialCoin[] specialCoins;
 
 void setup(){
   minim = new Minim(this);
@@ -137,9 +142,67 @@ void setup(){
   heart2hit = loadImage("heart(2hit).png");
   heartEmpty = loadImage("heart(empty).png");
   
-  platforms = new Platform[3];
-  platforms[1] = new Platform(300, height - 200, 200, 20, 255);
-  platforms[2] = new Platform(700, height - 300, 150, 20, 255);
+  platforms = new Platform[61];
+  platforms[1] = new Platform(390, height - 300, 250, 20, nofill);
+  platforms[2] = new Platform(716, height - 390, 158, 20, nofill);
+  platforms[3] = new Platform(1016, height - 300, 80, 20, nofill);
+  platforms[4] = new Platform(1955, height - 270, 80, 20, nofill);
+  platforms[5] = new Platform(2063, height - 365, 80, 20, nofill);
+  platforms[6] = new Platform(2177, height - 440, 80, 20, nofill);
+  platforms[7] = new Platform(2291, height - 508, 80, 20, nofill);
+  platforms[8] = new Platform(2521, height - 304, 245, 20, nofill);
+  platforms[9] = new Platform(3903, height - 270, 80, 20, nofill);
+  platforms[10] = new Platform(4123, height - 400, 408, 20, nofill);
+  platforms[11] = new Platform(4641, height - 270, 80, 20, nofill);
+  platforms[12] = new Platform(6430, height - 346, 240, 20, nofill);
+  platforms[13] = new Platform(6783, height - 460, 80, 20, nofill);
+  platforms[14] = new Platform(6955, height - 347, 80, 20, nofill);
+  platforms[15] = new Platform(7095, height - 257, 80, 20, nofill);
+  platforms[16] = new Platform(8255, height - 350, 80, 20, nofill);
+  platforms[17] = new Platform(8724, height - 350, 80, 20, nofill);
+  platforms[18] = new Platform(10011, height - 330, 80, 20, nofill);
+  platforms[19] = new Platform(10194, height - 450, 330, 20, nofill);
+  platforms[20] = new Platform(10621, height - 330, 80, 20, nofill);
+  platforms[21] = new Platform(12508, height - 330, 80, 20, nofill);
+  platforms[22] = new Platform(12687, height - 415, 80, 20, nofill);
+  platforms[23] = new Platform(12860, height - 505, 80, 20, nofill);
+  platforms[24] = new Platform(13765, height - 350, 80, 20, nofill);
+  platforms[25] = new Platform(14322, height - 350, 80, 20, nofill);
+  platforms[26] = new Platform(14804, height - 340, 80, 20, nofill);
+  platforms[27] = new Platform(14990, height - 450, 330, 20, nofill);
+  platforms[28] = new Platform(15415, height - 340, 80, 20, nofill);
+  platforms[29] = new Platform(16155, height - 320, 660, 20, nofill);
+  platforms[30] = new Platform(18927, height - 340, 80, 20, nofill);
+  platforms[31] = new Platform(19055, height - 435, 80, 20, nofill);
+  platforms[32] = new Platform(19191, height - 540, 80, 20, nofill);
+  platforms[33] = new Platform(19366, height - 445, 80, 20, nofill);
+  platforms[34] = new Platform(19533, height - 340, 80, 20, nofill);
+  platforms[35] = new Platform(20222, height - 325, 410, 20, nofill);
+  platforms[36] = new Platform(20732, height - 445, 80, 20, nofill);
+  platforms[37] = new Platform(20894, height - 530, 80, 20, nofill);
+  platforms[38] = new Platform(21053, height - 425, 80, 20, nofill);
+  platforms[39] = new Platform(21244, height - 400, 80, 20, nofill);
+  platforms[40] = new Platform(21419, height - 475, 80, 20, nofill);
+  platforms[41] = new Platform(21588, height - 595, 410, 20, nofill);
+  platforms[42] = new Platform(24848, height - 355, 155, 20, nofill);
+  platforms[43] = new Platform(25170, height - 365, 80, 20, nofill);
+  platforms[44] = new Platform(25295, height - 445, 80, 20, nofill);
+  platforms[45] = new Platform(25434, height - 330, 80, 20, nofill);
+  platforms[46] = new Platform(25631, height - 445, 80, 20, nofill);
+  platforms[47] = new Platform(25765, height - 535, 80, 20, nofill);
+  platforms[48] = new Platform(25890, height - 610, 320, 20, nofill);
+  platforms[49] = new Platform(26236, height - 500, 80, 20, nofill);
+  platforms[50] = new Platform(26346, height - 400, 80, 20, nofill);
+  platforms[51] = new Platform(26468, height - 300, 80, 20, nofill);
+  platforms[52] = new Platform(27560, height - 300, 80, 20, nofill);
+  platforms[53] = new Platform(27710, height - 410, 650, 20, nofill);
+  platforms[54] = new Platform(28460, height - 365, 80, 20, nofill);
+  platforms[55] = new Platform(29417, height - 290, 80, 20, nofill);
+  platforms[56] = new Platform(29531, height - 380, 80, 20, nofill);
+  platforms[57] = new Platform(29885, height - 380, 80, 20, nofill);
+  platforms[58] = new Platform(30185, height - 380, 80, 20, nofill);
+  platforms[59] = new Platform(30340, height - 280, 80, 20, nofill);
+  platforms[60] = new Platform(211291, height - 330, 80, 20, 255);
   
   
   enemies = new Enemies[3];
@@ -149,9 +212,25 @@ void setup(){
   playerColision = new Colissions(xpos, ypos, loon_size * realColissionBoxMult, loon_size * realColissionBoxMult);
   enemyColisions = new Colissions[enemies.length + 1];
   
-  fanenemies = new FanEnemy[2];
-  fanenemies[1] = new FanEnemy(900, 500, fanLeftImage, fanRightImage, 300, 3, true);
+  fanenemies = new FanEnemy[12];
+  fanenemies[1] = new FanEnemy(1708, 500, fanLeftImage, fanRightImage, 450, 3, false);
+  fanenemies[2] = new FanEnemy(6100, 500, fanLeftImage, fanRightImage, 650, 3, false);
+  fanenemies[3] = new FanEnemy(7100, 500, fanLeftImage, fanRightImage, 350, 3, true);
+  fanenemies[4] = new FanEnemy(11345, 500, fanLeftImage, fanRightImage, 500, 3, false);
+  fanenemies[5] = new FanEnemy(13647, 500, fanLeftImage, fanRightImage, 400, 3, false);
+  fanenemies[6] = new FanEnemy(15400, 500, fanLeftImage, fanRightImage, 400, 3, true);
+  fanenemies[7] = new FanEnemy(22500, 500, fanLeftImage, fanRightImage, 800, 3, true);
+  fanenemies[8] = new FanEnemy(23900, 500, fanLeftImage, fanRightImage, 650, 3, true);
+  fanenemies[9] = new FanEnemy(27155, 500, fanLeftImage, fanRightImage, 600, 3, false);
+  fanenemies[10] = new FanEnemy(28115, 200, fanLeftImage, fanRightImage, 350, 3, false);
+  fanenemies[11] = new FanEnemy(280115, 200, fanLeftImage, fanRightImage, 350, 3, false);
   
+  
+  specialCoins = new SpecialCoin[4];
+  specialCoins[1] = new SpecialCoin(800, 400, 120);
+  specialCoins[2] = new SpecialCoin(2000, 300, 120);
+  specialCoins[3] = new SpecialCoin(3000, 500, 120);
+   
   for (c = 1; c < enemies.length; c++) {
     enemyColisions[c] = new Colissions(enemies[c].x, enemies[c].y, enemies[c].enemy_size * realColissionBoxMult, enemies[c].enemy_size * realColissionBoxMult);
   }
@@ -220,6 +299,7 @@ void mousePressed() {
       song.setGain(volume); 
     }
     if (mouseX > 715 && mouseX < 1080 && mouseY > 725 && mouseY < 820 && mousePressed) {
+      isPaused = !isPaused;
       resetGame();
       mode = 0;
     }
@@ -302,6 +382,10 @@ void drawGame(){
         speedIncreased = false;
     }
     
+    if (minutes == 1 && seconds >= 40){
+      playerHealth = 0;
+    }
+    
     textSize(50);
     text(nf(minutes, 2) + ":" + nf(seconds, 2) + ":" + nf(milliseconds, 3), width - 260, 70); // nf() se utiliza para formatear los números y asegurarse de que tengan el número adecuado de dígitos
     if(show_loon){
@@ -373,6 +457,14 @@ void drawGame(){
         // Crea el proyectil en la posición inicial y con la velocidad adecuada
         proj = new Projectile(1000, 0, 10, 10, 70);
     }
+    
+     //for (sc = 1; sc < specialCoins.length; sc++) {
+     //   specialCoins[sc].display();
+     //   if (specialCoins[sc].checkCollision(playerColision)) {
+     //       specialCoins[sc].collected = true;
+     //   }
+     //}
+    
     
     playerColision.x = xpos + 85;
     playerColision.y = ypos + 70;
@@ -460,7 +552,9 @@ void resetGame() {
   }
   
   coinCounter = 0;
-  
+  for (sc = 1; sc < specialCoins.length; sc++) {
+        specialCoins[sc].collected = false;
+    }
 }
 
 void drawHowToPlay() {
@@ -530,7 +624,7 @@ void movement(){
 }
 
 void moveRect(){
-  xpos = constrain(xpos, 400, sizex-loon_size - 600);
+  xpos = constrain(xpos, 300, sizex-loon_size - 600);
   ypos = constrain(ypos, 0, sizey-loon_size-100);
   if (ypos >= sizey - loon_size-100) {
         ypos = sizey - loon_size-100; 
