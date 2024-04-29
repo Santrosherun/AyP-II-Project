@@ -34,6 +34,11 @@ class FanEnemy {
            if (playerX > x + backgroundX + 80 && playerX < x + backgroundX + 150 + windRange && playerY > y - 100 && playerY < y + 350){
              xpos = xpos + windForce;
              backgroundX = backgroundX - windForce;
+             windSound.play();
+           } else {
+             if(!windSound.isPlaying()){
+                 windSound.rewind();
+               }
            }
          } else {
            float windEffectX = x + backgroundX - windRange;
@@ -42,6 +47,11 @@ class FanEnemy {
            if(playerX > windEffectX - 100 && playerX < windEffectX + windRange && playerY > y - 100 && playerY < y + 350){
              xpos = xpos - windForce;
              backgroundX = backgroundX + windForce;
+             windSound.play();
+           } else {
+             if(!windSound.isPlaying()){
+               windSound.rewind();
+             }
            }
          }
       }
