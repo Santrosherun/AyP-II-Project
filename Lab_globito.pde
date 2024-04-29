@@ -24,7 +24,7 @@ float realColissionBoxMult = 0.2;
 int mode = 0;
 
 float xpos = 0, ypos = 0;
-float speed = 14;
+float speed = 4;
 int sizex = 1800, sizey = 900;
 int loon_size = 200;
 float volume = 0;
@@ -33,6 +33,8 @@ boolean izquierda = false;
 int playerHealth = 3, maxPlayerHealth = 3, heartWidth = 200;
 boolean isVulnereable = true, show_loon = true, show_deadloon = false;
 int vulnerableStartTime, vulnerableMaxDuration = 2000;
+
+int difficulty = 1;
 
 PImage backgroundImage_game, backgroundImage_menu, optionsMainMenu, optionsSelector, optionTitle, howToPlay, htpLeft, htpRight, htpJump, htpCollect,
 htpPause, htpVolume, pauseQuitGame, goBack, gameOver, betterLNT, retryImage, arrowsImage, resume_options, settings_options, play_options;
@@ -245,7 +247,7 @@ void setup(){
 
 
 void draw(){
-  //song.play();
+  song.play();
   println("X"+mouseX + "Y"+mouseY);
   println("back"+abs(backgroundX));
   switch(mode){
@@ -458,12 +460,12 @@ void drawGame(){
         proj = new Projectile(1000, 0, 10, 10, 70);
     }
     
-     //for (sc = 1; sc < specialCoins.length; sc++) {
-     //   specialCoins[sc].display();
-     //   if (specialCoins[sc].checkCollision(playerColision)) {
-     //       specialCoins[sc].collected = true;
-     //   }
-     //}
+     for (sc = 1; sc < specialCoins.length; sc++) {
+        specialCoins[sc].display();
+        if (specialCoins[sc].checkCollision(playerColision)) {
+            specialCoins[sc].collected = true;
+        }
+     }
     
     
     playerColision.x = xpos + 85;
