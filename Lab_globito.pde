@@ -43,7 +43,8 @@ PImage[] gif1;
 PImage[] gifdead_loon;
 PImage[] gifwind;
 PImage heartFull, hearthit, heart2hit, heartEmpty;
-PImage fanLeftImage, fanRightImage; 
+PImage fanLeftImage, fanRightImage;
+PImage specialCoin, specialCoin_noCollected;
 
 int numberOffFrames_loon, numberOffFrames_tittle, numberOffFrames_deadloon, numberOffFrames_Wind; 
 int f;
@@ -105,6 +106,8 @@ void setup(){
   arrowsImage = loadImage("arrows.png");
   fanLeftImage = loadImage("fan_Left.png");
   fanRightImage = loadImage("fan_Right.png");
+  specialCoin = loadImage("specialCoin.png");
+  specialCoin_noCollected = loadImage("specialCoin_noCollected.png");
   
   numberOffFrames_loon = 9;
   gif = new PImage[numberOffFrames_loon];
@@ -228,10 +231,15 @@ void setup(){
   fanenemies[11] = new FanEnemy(280115, 200, fanLeftImage, fanRightImage, 350, 3, false);
   
   
-  specialCoins = new SpecialCoin[4];
+  specialCoins = new SpecialCoin[9];
   specialCoins[1] = new SpecialCoin(800, 400, 120);
   specialCoins[2] = new SpecialCoin(2000, 300, 120);
   specialCoins[3] = new SpecialCoin(3000, 500, 120);
+  specialCoins[4] = new SpecialCoin(3000, 500, 120);
+  specialCoins[5] = new SpecialCoin(3000, 500, 120);
+  specialCoins[6] = new SpecialCoin(3000, 500, 120);
+  specialCoins[7] = new SpecialCoin(3000, 500, 120);
+  specialCoins[8] = new SpecialCoin(3000, 500, 120);
    
   for (c = 1; c < enemies.length; c++) {
     enemyColisions[c] = new Colissions(enemies[c].x, enemies[c].y, enemies[c].enemy_size * realColissionBoxMult, enemies[c].enemy_size * realColissionBoxMult);
@@ -535,6 +543,47 @@ void drawPause(){
   image(pauseQuitGame, 700, 700, 400, 150);
   //image(resume_options, 400, 200, 120,100);
   //image(play_options, 775, 300, 250, 100);
+  
+  if (specialCoins[1].collected == true) {
+    image(specialCoin, 200, 100, 300, 200);
+  } else {
+    image(specialCoin_noCollected, 200, 100, 300, 200);
+  }
+  if (specialCoins[2].collected == true){
+    image(specialCoin, 200, 250, 300, 200);
+  } else {
+    image(specialCoin_noCollected, 200, 250, 300, 200);
+  }
+  if (specialCoins[3].collected == true){
+    image(specialCoin, 200, 400, 300, 200);
+  } else {
+    image(specialCoin_noCollected, 200, 400, 300, 200);
+  }
+  if (specialCoins[4].collected == true){
+    image(specialCoin, 200, 550, 300, 200);
+  } else {
+    image(specialCoin_noCollected, 200, 550, 300, 200);
+  }
+  if (specialCoins[5].collected == true){
+    image(specialCoin, 1300, 100, 300, 200);
+  } else {
+    image(specialCoin_noCollected, 1300, 100, 300, 200);
+  }
+  if (specialCoins[6].collected == true){
+    image(specialCoin, 1300, 250, 300, 200);
+  } else {
+    image(specialCoin_noCollected, 1300, 250, 300, 200);
+  }
+  if (specialCoins[7].collected == true){
+    image(specialCoin, 1300, 400, 300, 200);
+  } else {
+    image(specialCoin_noCollected, 1300, 400, 300, 200);
+  }
+  if (specialCoins[8].collected == true){
+    image(specialCoin, 1300, 550, 300, 200);
+  } else {
+    image(specialCoin_noCollected, 1300, 550, 300, 200);
+  }
 
 }
 
