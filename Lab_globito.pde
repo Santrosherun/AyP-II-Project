@@ -4,6 +4,7 @@ Projectile proj;
 Colissions coli;
 FanEnemy fan;
 SpecialCoin sCoin;
+Shield shields;
 
 import ddf.minim.*;
 import ddf.minim.analysis.*;
@@ -52,7 +53,7 @@ int i = 0;
 int p;
 int e;
 int c;
-int co , numeroDeMonedas = 51, coinCounter = 0;
+int co , numeroDeMonedas = 51, coinCounter = 0, tShield;
 int im;
 int w;
 int fa;
@@ -277,6 +278,8 @@ void setup(){
   specialCoins[7] = new SpecialCoin(3000, 500, 120);
   specialCoins[8] = new SpecialCoin(3000, 500, 120);
    
+  shields = new Shield(5000);
+   
   for (c = 1; c < enemies.length; c++) {
     enemyColisions[c] = new Colissions(enemies[c].x, enemies[c].y, enemies[c].enemy_size * realColissionBoxMult, enemies[c].enemy_size * realColissionBoxMult);
   }
@@ -292,8 +295,8 @@ void setup(){
 
 void draw(){
   song.play();
-  println("X"+mouseX + "Y"+mouseY);
-  println("back"+abs(backgroundX));
+  //println("X"+mouseX + "Y"+mouseY);
+  //println("back"+abs(backgroundX));
   switch(mode){
     case 0:
       drawMainMenu(); 
@@ -517,6 +520,10 @@ void drawGame(){
             special_Coin.rewind();
         }
      }
+     
+    if (shields.isActivated()) {
+      shields.drawShield(xpos, ypos);
+    }
     
     
     playerColision.x = xpos + 85;
@@ -650,6 +657,7 @@ void resetGame() {
         specialCoins[sc].collected = false;
     }
   gameOverSound.rewind();
+  shields = new Shield(5000);
 }
 
 void drawHowToPlay() {
@@ -696,7 +704,9 @@ void keyPressed(){
      mode = 2;
      isPaused = !isPaused;
   }
-  
+  if (keyCode == DOWN && shields.isActivated() == false) {
+    shields.activate();
+  }
   
 }
 
