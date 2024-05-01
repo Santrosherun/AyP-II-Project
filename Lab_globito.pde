@@ -24,7 +24,7 @@ float realColissionBoxMult = 0.2;
 int mode = 0;
 
 float xpos = 0, ypos = 0;
-float speed = 4;
+float speed = 8;
 int sizex = 1800, sizey = 900;
 int loon_size = 200;
 float volume = 0;
@@ -69,6 +69,12 @@ boolean speedIncreased = false;
 Minim minim;
 AudioPlayer song;
 AudioPlayer dead_sound;
+AudioPlayer jumping_sound;
+AudioPlayer normalCoin;
+AudioPlayer special_Coin;
+AudioPlayer windSound;
+AudioPlayer vidaExtra;
+AudioPlayer gameOverSound;
 
 Colissions playerColision;
 Colissions[] enemyColisions;
@@ -82,6 +88,12 @@ void setup(){
   minim = new Minim(this);
   song = minim.loadFile("song.mp3");
   dead_sound = minim.loadFile("dead_sound.mp3");
+  jumping_sound = minim.loadFile("jumping sound.mp3");
+  normalCoin = minim.loadFile("normal_coin_sound.mp3");
+  special_Coin = minim.loadFile("specialCoinSound.mp3");
+  windSound = minim.loadFile("windSound.mp3");
+  vidaExtra = minim.loadFile("vidaExtra.mp3");
+  gameOverSound = minim.loadFile("gameOverSound.mp3");
   size (1800, 900);
   
   backgroundImage_menu = loadImage("Main_menu.png");
@@ -210,9 +222,33 @@ void setup(){
   platforms[60] = new Platform(211291, height - 330, 80, 20, 255);
   
   
-  enemies = new Enemies[3];
-  enemies[1] = new Enemies(900, height-400, 300, speed, 0, 1800);
-  enemies[2] = new Enemies(1900, height-400, 300, speed, 1800, 3200);
+  enemies = new Enemies[27];
+  enemies[1] = new Enemies(2293, 500, 300, 0, 2393, 2393);
+  enemies[2] = new Enemies(3800, height-400, 300, speed, 3800, 4504);
+  enemies[3] = new Enemies(6667, height-400, 300, 0, 2393, 2393);
+  enemies[4] = new Enemies(7900, height-400, 300, 0, 2393, 2393);
+  enemies[5] = new Enemies(8375, height-400, 300, 0, 2393, 2393);
+  enemies[6] = new Enemies(8843, height-400, 300, 0, 2393, 2393);
+  enemies[7] = new Enemies(9922, height-400, 300, speed, 9922, 10490);
+  enemies[8] = new Enemies(11506, height-400, 300, 0, 2393, 2393);
+  enemies[9] = new Enemies(12667, height-400, 300, 0, 2393, 2393);
+  enemies[10] = new Enemies(13938, height-400, 300, 0, 2393, 2393);
+  enemies[11] = new Enemies(14710, height-400, 300, speed, 14710, 15281);
+  enemies[12] = new Enemies(16310, 330, 300, 0, 2393, 2393);
+  enemies[13] = new Enemies(17050, height - 400, 300, speed, 17050, 17994);
+  enemies[14] = new Enemies(18010, height - 400, 300, speed, 18010, 18663);
+  enemies[15] = new Enemies(20560, height - 400, 300, 0, 2393, 2393);
+  enemies[16] = new Enemies(20900, height - 400, 300, 0, 2393, 2393);
+  enemies[17] = new Enemies(21270, height - 400, 300, 0, 2393, 2393);
+  enemies[18] = new Enemies(21665, height - 400, 300, 0, 2393, 2393);
+  enemies[19] = new Enemies(24900, height - 400, 300, 0, 2393, 2393);
+  enemies[20] = new Enemies(25530, height - 400, 300, speed, 25530, 26230);
+  enemies[21] = new Enemies(27570, height - 400, 300, speed, 27570, 28260);
+  enemies[22] = new Enemies(29420, height - 400, 300, 0, 2393, 2393);
+  enemies[23] = new Enemies(29640, height - 400, 300, 0, 2393, 2393);
+  enemies[24] = new Enemies(29888, height - 400, 300, 0, 2393, 2393);
+  enemies[25] = new Enemies(30100, height - 400, 300, 0, 2393, 2393);
+  enemies[26] = new Enemies(30760, height - 400, 300, speed, 30760, 31450);
   
   playerColision = new Colissions(xpos, ypos, loon_size * realColissionBoxMult, loon_size * realColissionBoxMult);
   enemyColisions = new Colissions[enemies.length + 1];
@@ -418,6 +454,8 @@ void drawGame(){
     
     if (coinCounter >= 10 && maxPlayerHealth != playerHealth){
         playerHealth = playerHealth + 1;
+        vidaExtra.play();
+        vidaExtra.rewind();
         coinCounter = coinCounter - 10;
     }
     
@@ -446,6 +484,9 @@ void drawGame(){
               coin.isCollected = true;
               // Incrementar el contador de monedas recolectadas
               coinCounter = coinCounter + 1;
+              // Sonido de recoleccion
+              normalCoin.play();
+              normalCoin.rewind();
           }
       }
     }
@@ -472,6 +513,8 @@ void drawGame(){
         specialCoins[sc].display();
         if (specialCoins[sc].checkCollision(playerColision)) {
             specialCoins[sc].collected = true;
+            special_Coin.play();
+            special_Coin.rewind();
         }
      }
     
@@ -591,7 +634,7 @@ void resetGame() {
   xpos = 0;
   ypos = 0;
   backgroundX = 0;
-  speed = 5;
+  speed = 8;
   Y_velocity = 0;
   playerHealth = maxPlayerHealth;
   startTime = millis();
@@ -606,6 +649,7 @@ void resetGame() {
   for (sc = 1; sc < specialCoins.length; sc++) {
         specialCoins[sc].collected = false;
     }
+  gameOverSound.rewind();
 }
 
 void drawHowToPlay() {
@@ -622,6 +666,9 @@ void drawHowToPlay() {
 }
 
 void drawFailScreen(){
+  gameOverSound.setGain(50);
+  gameOverSound.play();
+  //gameOverSound.rewind();
   background(backgroundImage_menu);
   image(gameOver, 370, 200, 1100, 250);
   image(betterLNT, 420, 350, 1000, 250);
@@ -640,6 +687,10 @@ void keyPressed(){
     spacePressed = true;
     isJumping = true; 
     jumpHoldTime = 0;
+    if(mode == 1){
+      jumping_sound.play();
+      jumping_sound.rewind();
+    }
   }
   if(mode == 1 && keyCode == TAB){
      mode = 2;
