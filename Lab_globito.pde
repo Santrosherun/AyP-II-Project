@@ -38,7 +38,7 @@ int vulnerableStartTime, vulnerableMaxDuration = 2000;
 int difficulty = 1;
 
 PImage backgroundImage_game, backgroundImage_menu, optionsMainMenu, optionsSelector, optionTitle, howToPlay, htpLeft, htpRight, htpJump, htpCollect,
-htpPause, htpVolume, pauseQuitGame, goBack, gameOver, betterLNT, retryImage, arrowsImage, resume_options, settings_options, play_options;
+htpPause, htpVolume, pauseQuitGame, goBack, gameOver, betterLNT, retryImage, difficultyTitle, difficultEasy, difficultNormal, difficultHard, arrowsImage, resume_options, settings_options, play_options;
 PImage[] gif;
 PImage[] gif1;
 PImage[] gifdead_loon;
@@ -65,7 +65,7 @@ int increaseTime = 15, increaseTime_m = 15000, lastIncreaseTime;
 boolean isRed = false;
 boolean isPaused = false; 
 boolean speedIncreased = false;
-
+boolean pressedDif = false;
 
 Minim minim;
 AudioPlayer song;
@@ -121,6 +121,10 @@ void setup(){
   fanRightImage = loadImage("fan_Right.png");
   specialCoin = loadImage("specialCoin.png");
   specialCoin_noCollected = loadImage("specialCoin_noCollected.png");
+  difficultyTitle =loadImage("diffiultyTitle.png");
+  difficultEasy = loadImage("difficultyEasy.png");
+  difficultNormal = loadImage("difficultyNormal.png");
+  difficultHard = loadImage("difficultyDifficult.png");
   
   numberOffFrames_loon = 9;
   gif = new PImage[numberOffFrames_loon];
@@ -278,6 +282,20 @@ void setup(){
   specialCoins[7] = new SpecialCoin(3000, 500, 120);
   specialCoins[8] = new SpecialCoin(3000, 500, 120);
    
+  switch(difficulty){
+    case 1:
+      tShield = 3;
+      break;
+    case 2:
+      tShield = 2;
+      break;
+    case 3:
+      tShield = 1;
+      break;
+    default:
+      tShield = 3;
+      break;
+  }
   shields = new Shield(5000);
    
   for (c = 1; c < enemies.length; c++) {
@@ -295,8 +313,8 @@ void setup(){
 
 void draw(){
   song.play();
-  //println("X"+mouseX + "Y"+mouseY);
-  //println("back"+abs(backgroundX));
+  println("X"+mouseX + "Y"+mouseY);
+  println("back"+abs(backgroundX));
   switch(mode){
     case 0:
       drawMainMenu(); 
@@ -362,9 +380,25 @@ void mousePressed() {
     if(mouseX > 630 && mouseX < 1170 && mouseY > 720 && mouseY < 845){
       mode = 0;
     }
-    if(mouseX > 440 && mouseX < 1360 && mouseY > 415 && mouseY < 590){
+    if(mouseX > 440 && mouseX < 1360 && mouseY > 215 && mouseY < 390){
       mode = 5;
     }
+    if(mouseX > 75 && mouseX < 440 && mouseY > 410 && mouseY < 490){
+      pressedDif = !pressedDif;
+    }
+    if(pressedDif){
+      if(mouseX > 75 && mouseX < 290 && mouseY > 495 && mouseY < 600){
+        image(optionsSelector, 290, 500, 150 ,75);
+        difficulty = 1;
+      }else if(mouseX > 75 && mouseX < 310 && mouseY > 580 && mouseY < 655){
+        image(optionsSelector, 310, 590, 150 ,75);
+        difficulty = 2;
+      }else if(mouseX > 75 && mouseX < 320 && mouseY > 670 && mouseY < 745){
+        image(optionsSelector, 315, 680, 150 ,75);
+        difficulty = 3;
+      }
+    } 
+
   } else if (mode == 5) {
     if(mouseX > 1320 && mouseX < 1780 && mouseY > 0 && mouseY < 100){
       mode = 4;
@@ -455,11 +489,39 @@ void drawGame(){
       fanenemies[fa].applyWindEffect(xpos, ypos);
     }
     
-    if (coinCounter >= 10 && maxPlayerHealth != playerHealth){
+    switch(difficulty){
+    case 1:
+      if (coinCounter >= 10 && maxPlayerHealth != playerHealth){
         playerHealth = playerHealth + 1;
         vidaExtra.play();
         vidaExtra.rewind();
         coinCounter = coinCounter - 10;
+      }
+      break;
+    case 2:
+      if (coinCounter >= 20 && maxPlayerHealth != playerHealth){
+        playerHealth = playerHealth + 1;
+        vidaExtra.play();
+        vidaExtra.rewind();
+        coinCounter = coinCounter - 20;
+    }
+      break;
+    case 3:
+      if (coinCounter >= 30 && maxPlayerHealth != playerHealth){
+        playerHealth = playerHealth + 1;
+        vidaExtra.play();
+        vidaExtra.rewind();
+        coinCounter = coinCounter - 30;
+    }
+      break;
+    default:
+      if (coinCounter >= 10 && maxPlayerHealth != playerHealth){
+        playerHealth = playerHealth + 1;
+        vidaExtra.play();
+        vidaExtra.rewind();
+        coinCounter = coinCounter - 10;
+    }
+      break;
     }
     
     if (maxPlayerHealth == playerHealth){
@@ -562,14 +624,21 @@ void drawGame(){
 
 void drawOptions(){
   background(backgroundImage_menu);
-  image(optionTitle, 300, 60, 1200, 250);
-  image(howToPlay, 400, 350, 1000, 300);
-  if(mouseX > 440 && mouseX < 1360 && mouseY > 415 && mouseY < 590){
-    image(optionsSelector, 1360, 420, 250 ,150);
+  image(optionTitle, 300, 0, 1200, 250);
+  image(howToPlay, 400, 150, 1000, 300);
+  if(mouseX > 440 && mouseX < 1360 && mouseY > 215 && mouseY < 390){
+    image(optionsSelector, 1360, 220, 250 ,150);
   }
   image(goBack, 600, 680, 600, 200);
   if(mouseX > 630 && mouseX < 1170 && mouseY > 720 && mouseY < 845){
     image(optionsSelector, 1180, 700, 250 ,150);
+  }
+  image(difficultyTitle, 60, 380, 400, 150);
+  if((mouseX > 75 && mouseX < 440 && mouseY > 410 && mouseY < 490) || pressedDif){
+    image(difficultEasy, 60, 480, 250, 100);
+    image(difficultNormal, 70, 570, 250, 100);
+    image(difficultHard, 75, 660, 250, 100);
+    image(optionsSelector, 445, 415, 150 ,75);
   }
 }
 
@@ -657,6 +726,20 @@ void resetGame() {
         specialCoins[sc].collected = false;
     }
   gameOverSound.rewind();
+  switch(difficulty){
+    case 1:
+      tShield = 3;
+      break;
+    case 2:
+      tShield = 2;
+      break;
+    case 3:
+      tShield = 1;
+      break;
+    default:
+      tShield = 3;
+      break;
+  }
   shields = new Shield(5000);
 }
 
