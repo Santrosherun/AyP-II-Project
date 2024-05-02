@@ -590,16 +590,22 @@ void drawGame(){
     
     playerColision.x = xpos + 85;
     playerColision.y = ypos + 70;
-     
+    
+    float playerPosition = xpos - backgroundX;
+
     for (e = 1; e < enemies.length; e++) {
       Enemies enemy = enemies[e];
-      enemy.display_enemy();
-      enemy.move();
-      enemy.shootProjectile(); // Lanza el proyectil
-      enemy.moveProjectile(); // Mueve el proyectil
-      enemy.displayProjectile(); // Muestra el proyectil
-      enemyColisions[e].x = enemy.x + backgroundX + 125;
-      enemyColisions[e].y = enemy.y + 120;
+      float distanceToPlayer = abs(playerPosition - enemy.x);
+      if (distanceToPlayer < 2000) {
+        // Paint the enemy
+        enemy.display_enemy();
+        enemy.move();
+        enemy.shootProjectile(); // Lanza el proyectil
+        enemy.moveProjectile(); // Mueve el proyectil
+        enemy.displayProjectile(); // Muestra el proyectil
+        enemyColisions[e].x = enemy.x + backgroundX + 125;
+        enemyColisions[e].y = enemy.y + 120;
+      }
       
       if (playerColision.intersect(enemyColisions[e]) && isVulnereable) {
         playerHealth = playerHealth - 1;
