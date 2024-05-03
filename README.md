@@ -207,5 +207,109 @@ Main Sketch
                   float projectile_size = 80; // Tamaño del proyectil
                   projectile1 = new Projectile(x + enemy_size / 2 , y + enemy_size / 2, projectile_speedX, projectile_speedY, projectile_size); // Creación del proyectil
                 }
-              --s
-            
+              --Se crea el objeto proyectil, se le da una dirección y una fuerza en X Aleatoria
+           4. Lógica para mover y mostrar el proyectil:
+              void move(){
+                projectile_speedY = projectile_speedY + gravity;
+                x = x + projectile_speedX ;
+                y = y + projectile_speedY;
+                // ^^^ Mover el proyectil, aplicarle gravedad y actualizar su posición ^^^
+                collisionBox.x = x + backgroundX; // Actualizar la posición de la caja en el eje X relativo al fondo
+                collisionBox.y = y; // Actualizar la posicón de la caja en el eje Y
+                collisionBox.width = 60; // Fijar el tamaño de la caja
+                collisionBox.height = 60; // Fijar el tamaño de la caja
+                
+                if (proj != null && playerColision.intersect(collisionBox) && isVulnereable) { // Detección de colisiones con el proyectil
+                    playerHealth = playerHealth - 1;
+                    speed = 8;
+                    show_loon = false;
+                    show_deadloon = true;
+                    dead_sound.unmute();
+                    isVulnereable = false;
+                    vulnerableStartTime = millis();
+                    f = 0;
+                    dead_sound.play();
+                }
+              }
+              void display_projectile(){ // display projectile
+                image(projectileImage, x + backgroundX, y, projectile_size, projectile_size);
+              }
+              --Se usa la función colisiones para determinar las colisiones entre la caja de los proyectiles y la del jugador, asímismo se pinta el proyectil y se calcula su movimiento, a la vez que se        acutualiza la posición de la caja de colisiones
+
+              5. Lógica para mover al enemigo y hacerlo saltar:
+                 void move(){
+                   x += enemy_speed; // Movimiento en el eje X
+               
+                   Y_velocity += gravity; // Aplicarles la gravedad
+                   if(enemy_speed != 0){
+                     y += Y_velocity; // Sumarle la velocidad a la posición en Y del enemigo
+                   } 
+                   if (y >= height - enemy_size) {
+                     y = height - enemy_size;
+                     Y_velocity = 0;
+                   }
+                   // ^^^ Enemigo en el piso ^^^
+                   
+                   if (x <= limit_X || x >= limit_Y) { // limites del enemigo
+                     enemy_speed *= -1; // Cambio de dirección
+                   }
+                   
+                   if (random(1000) < jumpOcasionally && y >= height - enemy_size) { // Salto aleatorio
+                     Y_velocity = -15; // Fuerza de salto
+                   }
+               
+                 }
+                 --Se le asigna una velocidad en X, y unos límites al enemigo, cuando llega a estos (Que se le pasan como parámetros) su velocidad se multiplica por -1, haciendo que cambie de dirección.
+                 Para el salto se usó la misma lógica que con el jugador, sumandole la gravedad a su velocidad en Y y posteriormente, a su posición, pero se hizo que esto sucediera de acuerdo a un intervalo de                   tiempo aleatorio
+
+              6. Efecto de Empuje del Abanico (Depende de a dónde esté mirando):
+                 void applyWindEffect(float playerX, float playerY) { // efecto de empuje del Abanico
+                     if (isFacingRight){
+                       float windEffectX = x + backgroundX + 250; // Calculando el empuje
+                       image(gifwind[w], windEffectX, y + 50, windRange, 200); // Pintando el viento
+                       frames_Wind();
+                       if (playerX > x + backgroundX + 80 && playerX < x + backgroundX + 150 + windRange && playerY > y - 100 && playerY < y + 350){ // Verificar que el jugador esté en el área de efecto
+                         xpos = xpos + windForce; // Aplicarselo a la posición en el eje X
+                         backgroundX = backgroundX - windForce; // Mover el fondo
+                         windSound.play();
+                       } else {
+                         if(!windSound.isPlaying()){
+                             windSound.rewind();
+                           }
+                       }
+                     } 
+                     // ^^^ Abanico mirando a la derecha ^^^
+                    -- Se le asignó una fuerza de empuje que se pasa como parámetro al crear el objeto. Este proceso recibe como parámetro la posición del jugador, y posteriormente calcula si está en el área de afección, si lo está, lo desplaza "windForce" unidades hacia una dirección u otra, dependiendo de dónde esté mirando el abanico, también desplaza un poco el fondo para aumentar el efecto de empuje.
+              7. Escudo (Flecha hacia abajo):
+                 boolean isActivated(){
+                   if (active && millis() - activationTime >= duration) { // Verificar que no haya pasado el tiempo del escudo
+                     active = false;
+                   }
+                   return active;
+                 }
+                 --Verifica que el escudo dure 5 segundos y que se desactive
+
+                 void drawShield(float playerX, float playerY){
+                   int shieldSize = 100;
+                   pushStyle(); // aislar estilos
+                   tint(255, 150);
+                   image(shieldImage, playerX - shieldSize / 2 + 100, playerY - 120 / 2 + 90, 100, shieldSize);
+                   popStyle(); // restaurar estilos
+                   isVulnereable = false;
+                 }
+                 --Pinta el escudo de forma semitransparente
+
+                 void activate(){
+                   if (count < tShield) { // Verificar que no se haya alcanzado el límite de activaciones
+                     active = true;
+                     activationTime = millis(); // Temporizador de escudo
+                     count = count + 1; // Incrementar el conteo de activaciones
+                   }
+                 }
+                 --Se encarga de activar el escudo solo "tShield" cantidad de veces
+              8. Detección de colisiones Monedas Especiales:
+                 boolean checkCollision(Colissions playerCollisionBox){ // Función que detecta colisiones con las monedas especiales
+                    //rect(x + 100 + backgroundX, y, size , size);
+                    return !collected && playerCollisionBox.intersect(new Colissions(x +100 + backgroundX, y, size, size));
+                }
+                 --
