@@ -1,11 +1,10 @@
-
+// Clase Plataformas
 
 class Platform{
   float x, y, width, height;
   int platformColor;
   boolean loonOnPlatform;
 
-  // Constructor
   Platform(float x_, float y_, float width_, float height_, int platformColor_) {
     x = x_;
     y = y_;
@@ -13,11 +12,13 @@ class Platform{
     height = height_;
     platformColor = platformColor_;
   }
+  // ^^^ Constructores ^^^
 
-  // Método para dibujar la plataforma
-  void drawPlatform() {
+  
+  void drawPlatform() { // Método para dibujar la plataforma
+    noStroke();
     fill(platformColor);
-    rect(x + backgroundX, y, width, height);
+    rect(x + backgroundX, y, width, height); // Moverla relativa al fondo
   }
 
    float getX() {
@@ -39,4 +40,5 @@ class Platform{
     int getColor(){
       return platformColor;
     }
+    // ^^^ Retornar la posición y el color de la plataforma ^^^
 } 
