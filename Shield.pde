@@ -1,4 +1,4 @@
-
+// Clase Escudo
 
 class Shield{
   boolean active;
