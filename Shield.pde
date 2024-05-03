@@ -13,17 +13,18 @@ class Shield{
     count = 0;
     shieldImage = loadImage("shieldImage.png");
   }  
+  // ^^^ Constructores ^^^
   
   void activate(){
-    if (count < 3) { // Verificar que no se haya alcanzado el límite de activaciones
+    if (count < tShield) { // Verificar que no se haya alcanzado el límite de activaciones
       active = true;
-      activationTime = millis();
+      activationTime = millis(); // Temporizador de escudo
       count = count + 1; // Incrementar el conteo de activaciones
     }
   }
   
   boolean isActivated(){
-    if (active && millis() - activationTime >= duration) {
+    if (active && millis() - activationTime >= duration) { // Verificar que no haya pasado el tiempo del escudo
       active = false;
     }
     return active;
