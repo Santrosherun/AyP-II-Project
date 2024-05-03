@@ -1,3 +1,6 @@
+// SKETCH PRINCIPAL
+
+
 Platform plat;  
 Enemies enemy;
 Projectile proj;
@@ -6,6 +9,8 @@ FanEnemy fan;
 SpecialCoin sCoin;
 Shield shields;
 
+// ^^^ Importando todas las clases en archivos a parte ^^^
+
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
@@ -13,7 +18,9 @@ import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 
-int nofill = #00FF0000;
+// ^^^ Importando la librería minim (Audio y música) ^^^
+
+int nofill = #00FF0000; // Color transparente
 
 float gravity = 1.2, jumpForce = -10, Y_velocity = 0;
 boolean spacePressed = false;
@@ -21,50 +28,64 @@ int jumpHoldTime = 0;
 int maxJumpHoldTime = 10; 
 int maxJumpForce = -20; 
 boolean isJumping = false;
+// ^^^ VELOCIDAD DE SALTO y GRAVEDAD ^^^
 float realColissionBoxMult = 0.2;
-int mode = 0;
+int mode = 0; // Controla el modo de juego actual
 
 float xpos = 0, ypos = 0;
 float speed = 8;
-int sizex = 1800, sizey = 900;
-int loon_size = 200;
-float volume = 0;
+// ^^^ Posición actual del jugador y velocidad ^^^
+int sizex = 1800, sizey = 900; // Tamaño del lienzo
+int loon_size = 200; // Tamaño del globo
+float volume = 0; // Aumento de la ganancia del volumen
+
 boolean derecha = false;
 boolean izquierda = false;
+// ^^^ Control de movimiento lateral ^^^
 int playerHealth = 3, maxPlayerHealth = 3, heartWidth = 200;
 boolean isVulnereable = true, show_loon = true, show_deadloon = false;
 int vulnerableStartTime, vulnerableMaxDuration = 2000;
+// ^^^ Control de cantiadad máxima de vida, tamaño de la imagen de los corazones, estado de vulnearabilidad y duración del mismo ^^^
 
-int difficulty = 1;
+int difficulty = 1; // Dificultad actual del videojuego
 
 PImage backgroundImage_game, backgroundImage_menu, optionsMainMenu, optionsSelector, optionTitle, howToPlay, htpLeft, htpRight, htpJump, htpCollect,
 htpPause, htpVolume, pauseQuitGame, goBack, gameOver, betterLNT, retryImage, difficultyTitle, difficultEasy, difficultNormal, difficultHard, arrowsImage, resume_options, settings_options, play_options;
+// ^^^ Todas las imagenes usadas ^^^
+
 PImage[] gif;
 PImage[] gif1;
 PImage[] gifdead_loon;
 PImage[] gifwind;
+// ^^^ Creación de los arreglos que controlarán los gifs ^^^
+
 PImage heartFull, hearthit, heart2hit, heartEmpty;
 PImage fanLeftImage, fanRightImage;
 PImage specialCoin, specialCoin_noCollected;
+// ^^^ Monedas y corazones ^^^
 
-int numberOffFrames_loon, numberOffFrames_tittle, numberOffFrames_deadloon, numberOffFrames_Wind; 
+int numberOffFrames_loon, numberOffFrames_tittle, numberOffFrames_deadloon, numberOffFrames_Wind; // Controladores del frame actual de los gifs
+
 int f;
 int i = 0;
 int p;
 int e;
 int c;
-int co , numeroDeMonedas = 51, coinCounter = 0, tShield;
+int co , numeroDeMonedas = 51, coinCounter = 0, tShield; // Contador de monedas, monedas totales y cantidad de escudos
 int im;
 int w;
 int fa;
 int sc;
+// ^^^ Contadores ^^^
 
-float backgroundX = 0;
+float backgroundX = 0; // Controla el movimiento del fondo, crea la ilusión de movimiento
+
 int startTime, elapsedTime, minutes, seconds, milliseconds, timePast, timePause;
 int increaseTime = 15, increaseTime_m = 15000, lastIncreaseTime; 
 boolean isRed = false;
 boolean isPaused = false; 
-boolean speedIncreased = false;
+// ^^^ Control del temporizador ^^^
+boolean speedIncreased = false; // Incremento de la velocidad
 boolean pressedDif = false;
 
 Minim minim;
@@ -76,6 +97,7 @@ AudioPlayer special_Coin;
 AudioPlayer windSound;
 AudioPlayer vidaExtra;
 AudioPlayer gameOverSound;
+// ^^^ Declarando variables de sonido ^^^
 
 Colissions playerColision;
 Colissions[] enemyColisions;
@@ -84,9 +106,10 @@ Enemies[] enemies;
 Coin[] coins;
 FanEnemy[] fanenemies;
 SpecialCoin[] specialCoins;
+// ^^^ Instanciando objetos ^^^
 
 void setup(){
-  minim = new Minim(this);
+  minim = new Minim(this); // Instanciando Minim
   song = minim.loadFile("song.mp3");
   dead_sound = minim.loadFile("dead_sound.mp3");
   jumping_sound = minim.loadFile("jumping sound.mp3");
@@ -225,7 +248,7 @@ void setup(){
   platforms[58] = new Platform(30185, height - 380, 80, 20, nofill);
   platforms[59] = new Platform(30340, height - 280, 80, 20, nofill);
   platforms[60] = new Platform(211291, height - 330, 80, 20, 255);
-  
+  // ^^^ Ubicando todas las plataformas ^^^
   
   enemies = new Enemies[27];
   enemies[1] = new Enemies(2293, 500, 300, 0, 2393, 2393);
@@ -254,9 +277,11 @@ void setup(){
   enemies[24] = new Enemies(29888, height - 400, 300, 0, 2393, 2393);
   enemies[25] = new Enemies(30100, height - 400, 300, 0, 2393, 2393);
   enemies[26] = new Enemies(30760, height - 400, 300, speed, 30760, 31450);
+  // ^^^ Ubicando todos los enemigos ^^^
   
   playerColision = new Colissions(xpos, ypos, loon_size * realColissionBoxMult, loon_size * realColissionBoxMult);
   enemyColisions = new Colissions[enemies.length + 1];
+  /// ^^^ Instanciando los objetos colisiones ^^^
   
   fanenemies = new FanEnemy[12];
   fanenemies[1] = new FanEnemy(1708, 500, fanLeftImage, fanRightImage, 450, 3, false);
@@ -270,7 +295,7 @@ void setup(){
   fanenemies[9] = new FanEnemy(27155, 500, fanLeftImage, fanRightImage, 600, 3, false);
   fanenemies[10] = new FanEnemy(28115, 200, fanLeftImage, fanRightImage, 350, 3, false);
   fanenemies[11] = new FanEnemy(280115, 200, fanLeftImage, fanRightImage, 350, 3, false);
-  
+  // ^^^ Ubicando los abanicos ^^^
   
   specialCoins = new SpecialCoin[9];
   specialCoins[1] = new SpecialCoin(800, 400, 120);
@@ -281,6 +306,7 @@ void setup(){
   specialCoins[6] = new SpecialCoin(3000, 500, 120);
   specialCoins[7] = new SpecialCoin(3000, 500, 120);
   specialCoins[8] = new SpecialCoin(3000, 500, 120);
+  // ^^^ Ubicando monedas especiales ^^^
    
   switch(difficulty){
     case 1:
@@ -297,17 +323,21 @@ void setup(){
       break;
   }
   shields = new Shield(5000);
+  // ^^^ Declarando los escudos dependiendo de la dificultad ^^^
    
   for (c = 1; c < enemies.length; c++) {
     enemyColisions[c] = new Colissions(enemies[c].x, enemies[c].y, enemies[c].enemy_size * realColissionBoxMult, enemies[c].enemy_size * realColissionBoxMult);
   }
+  // ^^^ Instanciando colisiones ^^^
+  
   coins = new Coin[numeroDeMonedas];
   for (co = 1; co < numeroDeMonedas; co++) {
         float x = random(600, 31400);
         float y = random(500, 700);
         coins[co] = new Coin(x, y, 100, 100);
     }
- 
+  // ^^^ Instanciando y ubicando monedas ^^^
+   
 }
 
 
@@ -343,7 +373,7 @@ void draw(){
 }
 void mousePressed() {
   // Detecta clics del mouse y realiza acciones según el estado del juego
-  if (mode == 0) {
+  if (mode == 0) { // Menu principal
     if(mouseX > 85 && mouseX < 405 && mouseY > 380 && mouseY < 490){
       mode = 1;
       startTime = millis();
@@ -352,9 +382,9 @@ void mousePressed() {
     if(mouseX > 85 && mouseX < 630 && mouseY > 545 && mouseY < 650){
       mode = 4;
     }
-  } else if (mode == 1) {
+  } else if (mode == 1) { // Juego principal
      
-  } else if (mode == 2) {
+  } else if (mode == 2) { // Menu de pausa
     if(mouseX > 1320 && mouseX < 1780 && mouseY > 0 && mouseY < 100){
       isPaused = !isPaused;
       startTime = timePause - timePast; // Se le resta el tiempo en pausa al tiempo total 
@@ -376,7 +406,7 @@ void mousePressed() {
       song.unmute();
     }
     
-  } else if (mode == 4) {
+  } else if (mode == 4) { // menu de opciones
     if(mouseX > 630 && mouseX < 1170 && mouseY > 720 && mouseY < 845){
       mode = 0;
     }
@@ -387,23 +417,23 @@ void mousePressed() {
       pressedDif = !pressedDif;
     }
     if(pressedDif){
-      if(mouseX > 75 && mouseX < 290 && mouseY > 495 && mouseY < 600){
+      if(mouseX > 75 && mouseX < 290 && mouseY > 495 && mouseY < 600){ // Facil
         image(optionsSelector, 290, 500, 150 ,75);
-        difficulty = 1;
-      }else if(mouseX > 75 && mouseX < 310 && mouseY > 580 && mouseY < 655){
+        difficulty = 1; // Cambio de dificultad
+      }else if(mouseX > 75 && mouseX < 310 && mouseY > 580 && mouseY < 655){ // Normal
         image(optionsSelector, 310, 590, 150 ,75);
-        difficulty = 2;
-      }else if(mouseX > 75 && mouseX < 320 && mouseY > 670 && mouseY < 745){
+        difficulty = 2; // Cambio de dificultad
+      }else if(mouseX > 75 && mouseX < 320 && mouseY > 670 && mouseY < 745){ // Dificil
         image(optionsSelector, 315, 680, 150 ,75);
-        difficulty = 3;
+        difficulty = 3; // Cambio de dificultad
       }
     } 
 
-  } else if (mode == 5) {
+  } else if (mode == 5) { // menu How to Play
     if(mouseX > 1320 && mouseX < 1780 && mouseY > 0 && mouseY < 100){
       mode = 4;
     }
-  } else if (mode == 3){
+  } else if (mode == 3){ // menu fail screen
     if (mouseX > 25 && mouseX < 520 && mouseY > 738 && mouseY < 890){
       resetGame();
       mode = 0;
@@ -441,15 +471,16 @@ void drawMainMenu(){
 
 void drawGame(){
     if(!isPaused){
-      timePast = millis() - startTime; 
+      timePast = millis() - startTime; // Empezar a contar el tiempo 
     }
     minutes = int(timePast / (1000 * 60));
     seconds = int((timePast / 1000) % 60);
     milliseconds = timePast % 1000; 
+    // ^^^ Dividiendo el tiempo en minutos, segundos y milisegundos ^^^
     image(backgroundImage_game, backgroundX, 0);
-    moveBackground(); 
+    moveBackground(); // Mover el background en el eje X
    
-    if (seconds % increaseTime == 0) {
+    if (seconds % increaseTime == 0) { // Parpadear cada increaseTime (15000) milisegundos
         isRed = !isRed;
         if (isRed) {
             fill(255, 0, 0);
@@ -457,37 +488,42 @@ void drawGame(){
             fill(255); 
         }
     }
-    if (timePast >= lastIncreaseTime + increaseTime_m && !speedIncreased) {
+    // ^^^ Parpadear en rojo ^^^
+    
+    if (timePast >= lastIncreaseTime + increaseTime_m && !speedIncreased) { // Verificar que se debe incrementar la velocidad, solo una vez
         speed += 0.5;
         lastIncreaseTime = timePast;
         speedIncreased = true;
     } else if (timePast < lastIncreaseTime + increaseTime_m) {
         speedIncreased = false;
     }
+    // ^^^ Lógica para incrementar la velocidad ^^^
     
     if (minutes == 1 && seconds >= 40){
       playerHealth = 0;
     }
-    
+    // ^^^ Eliminar al jugador si excede el minuto cuarenta ^^^
     textSize(50);
     text(nf(minutes, 2) + ":" + nf(seconds, 2) + ":" + nf(milliseconds, 3), width - 260, 70); // nf() se utiliza para formatear los números y asegurarse de que tengan el número adecuado de dígitos
+    // ^^^ Pintar el temporizador en pantalla formateado a 2 decimales ^^^
     if(show_loon){
-      image(gif[f], xpos, ypos, loon_size, loon_size);   
-    frames_loon();
+      image(gif[f], xpos, ypos, loon_size, loon_size); // Jugador normal
+    frames_loon(); // Llevar el conteo de los frames del gif
     }
     if(show_deadloon){
-      image(gifdead_loon[f], xpos, ypos, loon_size, loon_size);
-      frames_deadloon();
+      image(gifdead_loon[f], xpos, ypos, loon_size, loon_size); // Jugador dañado
+      frames_deadloon(); // Llevar el conteo de los frames del gif
     }
-    movement();
-    applyJumpForce();
-    applyGravity();
-    moveRect();
+    movement(); // Movimiento en el eje X
+    applyJumpForce(); // Movimiento en el eje Y (Fuerza de salto)
+    applyGravity(); // Gravedad para que vuelva al piso
+    moveRect(); // Evitar que el jugador exceda los límites de la pantalla
     
     for (fa = 1; fa < fanenemies.length; fa++){
       fanenemies[fa].display();
       fanenemies[fa].applyWindEffect(xpos, ypos);
     }
+    // ^^^ Dibujar y accionar abanicos ^^^
     
     switch(difficulty){
     case 1:
@@ -523,6 +559,7 @@ void drawGame(){
     }
       break;
     }
+    // ^^^ Crear cantidad de monedas dependiendo de la dificultad ^^^
     
     if (maxPlayerHealth == playerHealth){
       image (heartFull, 0, -30, 200, 200);
@@ -534,6 +571,7 @@ void drawGame(){
       image(heartEmpty, 0, -30, 200, 200);
       mode = 3;
     }
+    // ^^^ Pintar los corazones en pantalla ^^^
        
     for (co = 1; co < coins.length; co++) {
         Coin coin = coins[co];
@@ -543,14 +581,11 @@ void drawGame(){
     }
     if (keyPressed && keyCode == UP) {
       for (co = 1; co < coins.length; co++) {
-          Coin coin = coins[co];
-          if (!coin.isCollected && coin.checkCollision(xpos, ypos, loon_size * 0.4)) {
-              // Se ha detectado una colisión con la moneda
-              coin.isCollected = true;
-              // Incrementar el contador de monedas recolectadas
-              coinCounter = coinCounter + 1;
-              // Sonido de recoleccion
-              normalCoin.play();
+          Coin coin = coins[co]; // Creación de las monedas
+          if (!coin.isCollected && coin.checkCollision(xpos, ypos, loon_size * 0.4)) { // Se ha detectado una colisión con la moneda
+              coin.isCollected = true; // No pintar la moneda
+              coinCounter = coinCounter + 1; // Incrementar el contador de monedas recolectadas
+              normalCoin.play(); // Sonido de recoleccion
               normalCoin.rewind();
           }
       }
@@ -558,9 +593,11 @@ void drawGame(){
     fill(255);
     textSize(35);
     text("Monedas: " + coinCounter, 250, 70);
+    // ^^^ Pintar la cantidad de monedas en pantalla ^^^
+    
     for (p = 1; p < platforms.length; p++) {
-      Platform plat = platforms[p];
-      plat.drawPlatform();
+      Platform plat = platforms[p]; // Creación de las plataformas
+      plat.drawPlatform(); // Pintar las plataformas
        
       if (ypos + loon_size >= plat.getY() && ypos + loon_size <= plat.getY() + plat.getHeight() && xpos - backgroundX + 100 >= plat.getX() && xpos - backgroundX + 90 <= plat.getX() + plat.getWidth()) {
           ypos = plat.getY() - 200; 
@@ -568,6 +605,7 @@ void drawGame(){
           isJumping = false; 
       }
     }
+    // ^^^ Detectando la colisión sobre la plataforma ^^^
     
     if (proj == null) {
         // Crea el proyectil en la posición inicial y con la velocidad adecuada
@@ -575,50 +613,55 @@ void drawGame(){
     }
     
      for (sc = 1; sc < specialCoins.length; sc++) {
-        specialCoins[sc].display();
-        if (specialCoins[sc].checkCollision(playerColision)) {
-            specialCoins[sc].collected = true;
-            special_Coin.play();
+        specialCoins[sc].display(); // Pintando las monedas especiales
+        if (specialCoins[sc].checkCollision(playerColision)) { // Detectando la colisión con las monedas especiales
+            specialCoins[sc].collected = true; // Se ha detectado la colisión
+            special_Coin.play(); // Sonido de recolección
             special_Coin.rewind();
         }
      }
+     // ^^^ Creación de las monedas especiales ^^^
      
     if (shields.isActivated()) {
       shields.drawShield(xpos, ypos);
     }
-    
+    // ^^^ Pintando el escudo si está activo ^^^
     
     playerColision.x = xpos + 85;
     playerColision.y = ypos + 70;
+    // ^^^ Actualizando la caja de colisiones del jugador ^^^
     
-    float playerPosition = xpos - backgroundX;
+    float playerPosition = xpos - backgroundX; // Posición del jugador relativa al fondo
 
     for (e = 1; e < enemies.length; e++) {
-      Enemies enemy = enemies[e];
-      float distanceToPlayer = abs(playerPosition - enemy.x);
-      if (distanceToPlayer < 2000) {
-        // Paint the enemy
-        enemy.display_enemy();
-        enemy.move();
+      Enemies enemy = enemies[e]; // Creación de los enemigos
+      float distanceToPlayer = abs(playerPosition - enemy.x); // Calculando la distancia del jugador a los enemigos
+      if (distanceToPlayer < 2000) { // Distancia relativa de 2000 pixeles
+        enemy.display_enemy(); // Dibujar enemigo
+        enemy.move(); // Mover al enemigo tanto en X como los saltos en Y
         enemy.shootProjectile(); // Lanza el proyectil
         enemy.moveProjectile(); // Mueve el proyectil
         enemy.displayProjectile(); // Muestra el proyectil
-        enemyColisions[e].x = enemy.x + backgroundX + 125;
-        enemyColisions[e].y = enemy.y + 120;
+        // ^^^ Pintar enemigos, lanzar y controlar el movimiento de los mismos^^^
       }
+      // ^^^ Pintar enemigos que estén cerca del jugador ^^^
       
-      if (playerColision.intersect(enemyColisions[e]) && isVulnereable) {
-        playerHealth = playerHealth - 1;
+      enemyColisions[e].x = enemy.x + backgroundX + 125;
+      enemyColisions[e].y = enemy.y + 120;
+      // ^^^ Actualizar la caja de colisiones en todo momento ^^^
+      
+      if (playerColision.intersect(enemyColisions[e]) && isVulnereable) { // Detectar las colisiones del jugador con los enemigos
+        playerHealth = playerHealth - 1; // Restar vida si colisiona
         show_loon = false;
         show_deadloon = true;
         dead_sound.unmute();
         isVulnereable = false;
-        vulnerableStartTime = millis();
-        f = 0;
+        vulnerableStartTime = millis(); // iniciar el contador de tiempo de invulnerabilidad 
+        f = 0; // Reiniciar el estado de la animación del globo
         dead_sound.play();
       }
     }
-    if (!isVulnereable && millis() - vulnerableStartTime >= vulnerableMaxDuration) {
+    if (!isVulnereable && millis() - vulnerableStartTime >= vulnerableMaxDuration) { // Verificar si ya pasó el tiempo de invulnereabilidad
       show_loon = true;
       show_deadloon = false;
       dead_sound.rewind();
@@ -628,7 +671,7 @@ void drawGame(){
     
 }
 
-void drawOptions(){
+void drawOptions(){ 
   background(backgroundImage_menu);
   image(optionTitle, 300, 0, 1200, 250);
   image(howToPlay, 400, 150, 1000, 300);
@@ -650,11 +693,11 @@ void drawOptions(){
 
 
 void drawPause(){
-  timePause = millis();
+  timePause = millis(); // Contador de tiempo en pausa
   background(backgroundImage_menu);
   
   fill(0, 150);
-  rect(0, 0, width, height); // Blur baclground image
+  rect(0, 0, width, height); // Crear un rectangulo que cree la ilusión de transparencia
   
   image(goBack, 1300, 0, 500, 100);
   image(htpPause, 600, 50, 600, 200);
@@ -663,7 +706,8 @@ void drawPause(){
   fill(#ff0a54);
   rect(750, 450, 300, 40); 
   fill(0, 255, 0);
-  rect(750, 450, map(volume, -50, 50, 0, 300), 40); 
+  rect(750, 450, map(volume, -50, 50, 0, 300), 40); // Mapea los valores a valores que la función .Gain acepte 
+  // ^^^ Crear la barra de volumen ^^^
 
   image(pauseQuitGame, 700, 700, 400, 150);
   //image(resume_options, 400, 200, 120,100);
@@ -709,10 +753,10 @@ void drawPause(){
   } else {
     image(specialCoin_noCollected, 1300, 550, 300, 200);
   }
-
+  // ^^^ Creando y ubicando todas las monedas especiales ^^^
 }
 
-void resetGame() {
+void resetGame() { // Todo lo que debe ser reiniciado después de una ejecucción del videojuego
   xpos = 0;
   ypos = 0;
   backgroundX = 0;
@@ -780,20 +824,21 @@ void keyPressed(){
   if(keyCode == RIGHT) {
     derecha = true;
   }
-  if(key == ' ' && Y_velocity == 0) { 
+  if(key == ' ' && Y_velocity == 0) { // Saltar con el espacio si está en el piso
     spacePressed = true;
     isJumping = true; 
     jumpHoldTime = 0;
-    if(mode == 1){
+    if(mode == 1){ 
       jumping_sound.play();
       jumping_sound.rewind();
     }
+    //^^^ Lógica de salto ^^^
   }
-  if(mode == 1 && keyCode == TAB){
+  if(mode == 1 && keyCode == TAB){ // Botón de pausa
      mode = 2;
-     isPaused = !isPaused;
+     isPaused = !isPaused; // Cambiar el estado de pausa
   }
-  if (keyCode == DOWN && shields.isActivated() == false) {
+  if (keyCode == DOWN && shields.isActivated() == false) { // Botón del escudo 
     shields.activate();
   }
   
@@ -813,7 +858,7 @@ void keyReleased() {
   
 }
 
-void movement(){
+void movement(){ // Movimiento en el eje X
   if(izquierda) {
     xpos -= speed;
   }
@@ -824,7 +869,7 @@ void movement(){
   
 }
 
-void moveRect(){
+void moveRect(){ // Evitar que el globo salga de la pantalla
   xpos = constrain(xpos, 300, sizex-loon_size - 600);
   ypos = constrain(ypos, 0, sizey-loon_size-100);
   if (ypos >= sizey - loon_size-100) {
@@ -835,7 +880,7 @@ void moveRect(){
   
 }
 
-void frames_loon(){
+void frames_loon(){ // Controlar las imagenes del gif
   if(frameCount % 3 == 0){
     f++;
   }
@@ -845,7 +890,7 @@ void frames_loon(){
   
   
 }
-void frames_tittle(){
+void frames_tittle(){ // Controlar las imagenes del gif
   if(frameCount % 2 == 0){
     f++;
   }
@@ -856,7 +901,7 @@ void frames_tittle(){
   
 }
 
-void frames_deadloon(){
+void frames_deadloon(){ // Controlar las imagenes del gif
   if(frameCount % 18 == 0){
     f++;
   }
@@ -867,7 +912,7 @@ void frames_deadloon(){
   
 }
 
-void frames_Wind(){
+void frames_Wind(){ // Controlar las imagenes del gif
   if(frameCount % 3 == 0){
     w++;
   }
@@ -879,33 +924,33 @@ void frames_Wind(){
 }
 
 void applyJumpForce() {
-  if (isJumping) {
-    Y_velocity = jumpForce;
+  if (isJumping) { // Verificar si está en el aire
+    Y_velocity = jumpForce; // Asignar a la velocidad en Y la fuerza de salto
     isJumping = false;
-  } else if (spacePressed && jumpHoldTime < maxJumpHoldTime) {
-    jumpHoldTime++;
-    Y_velocity = map(jumpHoldTime, 0, maxJumpHoldTime, jumpForce, maxJumpForce);
+  } else if (spacePressed && jumpHoldTime < maxJumpHoldTime) { // Fuerza máxima de salto
+    jumpHoldTime++; // Sumando al tiempo de fuerza máxima
+    Y_velocity = map(jumpHoldTime, 0, maxJumpHoldTime, jumpForce, maxJumpForce); // mapeando el tiempo de salto actual a los valores del tiempo máximo de salto
   }
 }
 
-void applyGravity(){
-  if (!isJumping && ypos >= sizey - loon_size) { 
+void applyGravity(){ // Aplicando el efecto de gravedad
+  if (!isJumping && ypos >= sizey - loon_size) { // Verificar que no esté saltando y que esté tocando el piso
         isJumping = false; 
         Y_velocity = 0; 
     } else {
-        Y_velocity += gravity; 
+        Y_velocity += gravity; // Sumandole la gravedad a la velocidad para hacerlo caer
     }
-    ypos += Y_velocity; 
+    ypos += Y_velocity; // Ssumandole la velocidad en Y a la cordenada del eje Y
 }
 
-void moveBackground() {
+void moveBackground() { // Mover el fondo
 
     if (derecha) {
         backgroundX -= speed * 2;
     } else if (izquierda) {
         backgroundX += speed * 2;
     }
-    backgroundX = constrain(backgroundX, -(backgroundImage_game.width - width), 0);
+    backgroundX = constrain(backgroundX, -(backgroundImage_game.width - width), 0); // Verificar que el fondo no se salga de los límites de la pantalla
     image(backgroundImage_game, backgroundX, 0);
     
 }
