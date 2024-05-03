@@ -1,4 +1,4 @@
-
+// Clase Enemigos
 
 class Enemies{
   float limit_X, limit_Y;
@@ -13,7 +13,7 @@ class Enemies{
   Projectile projectile3;
   Projectile projectile4;
   
-  Enemies(float x_,float y_, int enemy_size_, float enemy_speed_, float limit_X_, float limit_Y_){
+  Enemies(float x_, float y_, int enemy_size_, float enemy_speed_, float limit_X_, float limit_Y_){
     x = x_;
     y = y_;
     enemy_size = enemy_size_;
@@ -23,41 +23,42 @@ class Enemies{
     
     spike_enemy = loadImage("enemy(still).png");
   }
+  // ^^^ Constructores ^^^
   
   void move(){
-    // Enemy movement
-    x += enemy_speed;
+    x += enemy_speed; // Movimiento en el eje X
 
-    Y_velocity += gravity;
-    y += Y_velocity;
-    
+    Y_velocity += gravity; // Aplicarles la gravedad
+    if(enemy_speed != 0){
+      y += Y_velocity; // Sumarle la velocidad a la posición en Y del enemigo
+    } 
     if (y >= height - enemy_size) {
       y = height - enemy_size;
       Y_velocity = 0;
     }
+    // ^^^ Enemigo en el piso ^^^
     
-    if (x <= limit_X || x >= limit_Y) { //modificar
-      enemy_speed *= -1;
+    if (x <= limit_X || x >= limit_Y) { // limites del enemigo
+      enemy_speed *= -1; // Cambio de dirección
     }
     
-    if (random(1000) < jumpOcasionally && y >= height - enemy_size) {
-      Y_velocity = -15; // Set a jump velocity
+    if (random(1000) < jumpOcasionally && y >= height - enemy_size) { // Salto aleatorio
+      Y_velocity = -15; // Fuerza de salto
     }
 
   }
   
   void display_enemy(){
-    // Display enemies
-    image(spike_enemy, x + backgroundX, y, enemy_size, enemy_size);
+    image(spike_enemy, x + backgroundX, y, enemy_size, enemy_size); // Pintar el enemigo
   }
   
-  void shootProjectile(){
-    if (projectile1 == null) {
-      float direction = random(-1, 1);
-      float projectile_speedX = direction * random(10, 5); 
-      float projectile_speedY = -20;
-      float projectile_size = 80; 
-      projectile1 = new Projectile(x + enemy_size / 2 , y + enemy_size / 2, projectile_speedX, projectile_speedY, projectile_size);
+  void shootProjectile(){ // Lanzar poryectiles
+    if (projectile1 == null) { // Lanzar solo si no hay un proyectil ya
+      float direction = random(-1, 1); // Dirección aleatoria
+      float projectile_speedX = direction * random(10, 5); // Fuerza Variable en X
+      float projectile_speedY = -20; // Fuerza de tiro en Y
+      float projectile_size = 80; // Tamaño del proyectil
+      projectile1 = new Projectile(x + enemy_size / 2 , y + enemy_size / 2, projectile_speedX, projectile_speedY, projectile_size); // Creación del proyectil
     }
     if (projectile2 == null) {
       float direction = random(-1, 1);
@@ -85,18 +86,15 @@ class Enemies{
   }
   
   void moveProjectile() {
-    // Mover el proyectil si existe
-    if (projectile1 != null) {
+    if (projectile1 != null) { // Mover el proyectil si existe
       projectile1.move();
-      // Eliminar el proyectil si sale de la pantalla
-      if (projectile1.y > 900) {
-        projectile1 = null;
+      if (projectile1.y > height) { // Eliminar el proyectil si sale de la pantalla
+        projectile1 = null; // Si sale de la pantalla, eliminar el proyectil
       }
     } 
-    if (difficulty == 2 || difficulty == 3){
+    if (difficulty == 2 || difficulty == 3){ // Pintar más proyectiles dependiendo de la dificultad
        if (projectile2 != null) {
-        // Mover el proyectil si existe
-        projectile2.move();
+        projectile2.move(); // Mover el proyectil si existe
        if (projectile2.y > height) {
           projectile2 = null; // Eliminar el proyectil si sale de la pantalla
        }
@@ -104,15 +102,13 @@ class Enemies{
     }
     if (difficulty == 3){
       if (projectile3 != null) {
-        // Mover el proyectil si existe
-        projectile3.move();
+        projectile3.move(); // Mover el proyectil si existe
        if (projectile3.y > height) {
           projectile3 = null; // Eliminar el proyectil si sale de la pantalla
        }
       }
       if (projectile4 != null) {
-        // Mover el proyectil si existe
-        projectile4.move();
+        projectile4.move(); // Mover el proyectil si existe
        if (projectile4.y > height) {
           projectile4 = null; // Eliminar el proyectil si sale de la pantalla
        }
@@ -121,21 +117,20 @@ class Enemies{
 }
   
   void displayProjectile() {
-    // Mostrar el proyectil si existe
-    if (projectile1 != null) {
-      projectile1.display_projectile();
+    if (projectile1 != null) { 
+      projectile1.display_projectile(); // Mostrar el proyectil si existe
     }
-    if (difficulty == 2 || difficulty == 3){
+    if (difficulty == 2 || difficulty == 3){ // Mostrar más proyectiles dependiendo de la dificultad
       if (projectile2 != null){
         projectile2.display_projectile();
       }
     }
     if (difficulty == 3){
      if (projectile3 != null){
-        projectile3.display_projectile();
+        projectile3.display_projectile(); // Mostrar el proyectil
       }
      if (projectile4 != null){
-        projectile4.display_projectile();
+        projectile4.display_projectile(); // Mostrar el proyectil
       }
     }
   }
