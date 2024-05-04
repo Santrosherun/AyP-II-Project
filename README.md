@@ -312,4 +312,4 @@ Main Sketch
                     //rect(x + 100 + backgroundX, y, size , size);
                     return !collected && playerCollisionBox.intersect(new Colissions(x +100 + backgroundX, y, size, size));
                 }
-                 --
+                 --Usa la función de detección de colisiones para recolectar las monedas
