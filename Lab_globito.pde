@@ -30,7 +30,7 @@ int maxJumpForce = -20;
 boolean isJumping = false;
 // ^^^ VELOCIDAD DE SALTO y GRAVEDAD ^^^
 float realColissionBoxMult = 0.2;
-int mode = 0; // Controla el modo de juego actual
+int mode = 6; // Controla el modo de juego actual
 
 float xpos = 0, ypos = 0;
 float speed = 8;
@@ -50,7 +50,8 @@ int vulnerableStartTime, vulnerableMaxDuration = 2000;
 int difficulty = 1; // Dificultad actual del videojuego
 
 PImage backgroundImage_game, backgroundImage_menu, optionsMainMenu, optionsSelector, optionTitle, howToPlay, htpLeft, htpRight, htpJump, htpCollect,
-htpPause, htpVolume, pauseQuitGame, goBack, gameOver, betterLNT, retryImage, difficultyTitle, difficultEasy, difficultNormal, difficultHard, arrowsImage, resume_options, settings_options, play_options;
+htpPause, htpVolume, pauseQuitGame, goBack, gameOver, betterLNT, retryImage, difficultyTitle, difficultEasy, difficultNormal, difficultHard, arrowsImage, resume_options, settings_options,
+play_options, statsImage, retryWinImage, exitImage, congratulationImage, endDecoration, winBackground, projectileImage;;
 // ^^^ Todas las imagenes usadas ^^^
 
 PImage[] gif;
@@ -87,6 +88,9 @@ boolean isPaused = false;
 // ^^^ Control del temporizador ^^^
 boolean speedIncreased = false; // Incremento de la velocidad
 boolean pressedDif = false;
+
+int jumpNumber = 0;
+float speedStat = speed;
 
 Minim minim;
 AudioPlayer song;
@@ -148,6 +152,13 @@ void setup(){
   difficultEasy = loadImage("difficultyEasy.png");
   difficultNormal = loadImage("difficultyNormal.png");
   difficultHard = loadImage("difficultyDifficult.png");
+  winBackground = loadImage("winbackground.jpg");
+  statsImage = loadImage("statsImage.png");
+  retryWinImage = loadImage("retryImage.png");
+  exitImage = loadImage("exitImage.png");
+  projectileImage = loadImage("spike_projectile.png");
+  congratulationImage = loadImage("congratulationImage.png");
+  endDecoration = loadImage("endDecoration.png");
   
   numberOffFrames_loon = 9;
   gif = new PImage[numberOffFrames_loon];
@@ -298,14 +309,14 @@ void setup(){
   // ^^^ Ubicando los abanicos ^^^
   
   specialCoins = new SpecialCoin[9];
-  specialCoins[1] = new SpecialCoin(800, 400, 120);
-  specialCoins[2] = new SpecialCoin(2000, 300, 120);
-  specialCoins[3] = new SpecialCoin(3000, 500, 120);
-  specialCoins[4] = new SpecialCoin(3000, 500, 120);
-  specialCoins[5] = new SpecialCoin(3000, 500, 120);
-  specialCoins[6] = new SpecialCoin(3000, 500, 120);
-  specialCoins[7] = new SpecialCoin(3000, 500, 120);
-  specialCoins[8] = new SpecialCoin(3000, 500, 120);
+  specialCoins[1] = new SpecialCoin(4250, 625, 120);
+  specialCoins[2] = new SpecialCoin(6590, 620, 120);
+  specialCoins[3] = new SpecialCoin(9518, 50, 120);
+  specialCoins[4] = new SpecialCoin(15070, 50, 120);
+  specialCoins[5] = new SpecialCoin(17385, 75, 120);
+  specialCoins[6] = new SpecialCoin(21160, 610, 120);
+  specialCoins[7] = new SpecialCoin(25965, 380, 120);
+  specialCoins[8] = new SpecialCoin(29875, 60, 120);
   // ^^^ Ubicando monedas especiales ^^^
    
   switch(difficulty){
@@ -332,7 +343,7 @@ void setup(){
   
   coins = new Coin[numeroDeMonedas];
   for (co = 1; co < numeroDeMonedas; co++) {
-        float x = random(600, 31400);
+        float x = random(600, 32752);
         float y = random(500, 700);
         coins[co] = new Coin(x, y, 100, 100);
     }
@@ -363,6 +374,12 @@ void draw(){
       break;
     case 5:
       drawHowToPlay();
+      break;
+    case 6:
+      drawWinScreen();
+      break;
+    case 7:
+      drawStatistics();
       break;
      default:
        println("No deberias ver esto");
@@ -439,10 +456,31 @@ void mousePressed() {
       mode = 0;
     }
     if(mouseX > 1320 && mouseX < 1780 && mouseY > 738 && mouseY < 890){
-      resetGame();
+      resetGame();  
       mode = 1;
     }
      
+  } else if (mode == 6){ // Pantalla de victoria
+    if(mouseX > 215 && mouseX < 675 && mouseY > 275 && mouseY < 420){ // Estadisticas
+      mode = 7;
+    }
+    if(mouseX > 220 && mouseX < 675 && mouseY > 475 && mouseY < 620){ // Volver a jugar
+      resetGame();
+      mode = 1;
+    }
+    if(mouseX > 220 && mouseX < 680 && mouseY > 675 && mouseY < 825){ // Salir al menu principal
+      resetGame();
+      mode = 0;
+    }
+  } else if(mode == 7){ // Estadisticas
+    if(mouseX > 65 && mouseX < 335 && mouseY > 760 && mouseY < 835){ // Volver a jugar
+      resetGame();
+      mode = 1;
+    }
+    if(mouseX > 395 && mouseX < 665 && mouseY > 760 && mouseY < 835){ // Salir al menu principal
+      resetGame();
+      mode = 0;
+    }
   }
   
 }
@@ -494,6 +532,9 @@ void drawGame(){
         speed += 0.5;
         lastIncreaseTime = timePast;
         speedIncreased = true;
+        if (speedStat < speed){ // Comprobar cuál fue la velocidad más alta alcanzada
+          speedStat = speed;
+        }
     } else if (timePast < lastIncreaseTime + increaseTime_m) {
         speedIncreased = false;
     }
@@ -503,6 +544,10 @@ void drawGame(){
       playerHealth = 0;
     }
     // ^^^ Eliminar al jugador si excede el minuto cuarenta ^^^
+    
+    if(xpos + abs(backgroundX) >= 31950){
+      mode = 6;
+    }
     textSize(50);
     text(nf(minutes, 2) + ":" + nf(seconds, 2) + ":" + nf(milliseconds, 3), width - 260, 70); // nf() se utiliza para formatear los números y asegurarse de que tengan el número adecuado de dígitos
     // ^^^ Pintar el temporizador en pantalla formateado a 2 decimales ^^^
@@ -600,7 +645,7 @@ void drawGame(){
       plat.drawPlatform(); // Pintar las plataformas
        
       if (ypos + loon_size >= plat.getY() && ypos + loon_size <= plat.getY() + plat.getHeight() && xpos - backgroundX + 100 >= plat.getX() && xpos - backgroundX + 90 <= plat.getX() + plat.getWidth()) {
-          ypos = plat.getY() - 200; 
+          ypos = plat.getY() - loon_size; 
           Y_velocity = 0; 
           isJumping = false; 
       }
@@ -655,6 +700,7 @@ void drawGame(){
         show_loon = false;
         show_deadloon = true;
         dead_sound.unmute();
+        speed = 6;
         isVulnereable = false;
         vulnerableStartTime = millis(); // iniciar el contador de tiempo de invulnerabilidad 
         f = 0; // Reiniciar el estado de la animación del globo
@@ -667,7 +713,6 @@ void drawGame(){
       dead_sound.rewind();
       isVulnereable = true;
   }
-
     
 }
 
@@ -756,6 +801,33 @@ void drawPause(){
   // ^^^ Creando y ubicando todas las monedas especiales ^^^
 }
 
+void drawWinScreen(){
+  background(winBackground);
+  image(congratulationImage, 100, 0, 1600, 300);
+  image(endDecoration, 1000, 250, 600, 700);
+  image(statsImage, 200, 250, 500, 200);
+  image(projectileImage, 80, 290, 150, 150);
+  image(retryWinImage, 200, 450, 500, 200);
+  image(projectileImage, 80, 480, 150, 150);
+  image(exitImage, 200, 650, 500, 200);
+  image(projectileImage, 80, 690, 150, 150);
+}
+
+void drawStatistics(){
+  background(winBackground);
+  image(projectileImage, 440, 80, 200, 200);
+  image(statsImage, 600, 0, 600, 300);
+  image(projectileImage, 1160, 80, 200, 200);
+  image(retryWinImage, 50, 750, 300, 100);
+  image(exitImage, 380, 745, 300, 100);
+  fill(#0766D8);
+  textSize(65);
+  text("Saltos:", 20, 350);
+  text(jumpNumber, 240, 350);
+  text("Velocidad máxima:" , 20, 450);
+  text(nf(speedStat, 0, 1), 550, 450);
+}
+
 void resetGame() { // Todo lo que debe ser reiniciado después de una ejecucción del videojuego
   xpos = 0;
   ypos = 0;
@@ -766,7 +838,7 @@ void resetGame() { // Todo lo que debe ser reiniciado después de una ejecucció
   startTime = millis();
   
   for (int co = 1; co < numeroDeMonedas; co++) {
-    float x = random(600, 31400);
+    float x = random(600, 32752);
     float y = random(500, 700);
     coins[co] = new Coin(x, y, 100, 100);
   }
@@ -791,6 +863,8 @@ void resetGame() { // Todo lo que debe ser reiniciado después de una ejecucció
       break;
   }
   shields = new Shield(5000);
+  jumpNumber = 0;
+  speedStat = 0;
 }
 
 void drawHowToPlay() {
@@ -825,6 +899,7 @@ void keyPressed(){
     derecha = true;
   }
   if(key == ' ' && Y_velocity == 0) { // Saltar con el espacio si está en el piso
+    jumpNumber = jumpNumber + 1;
     spacePressed = true;
     isJumping = true; 
     jumpHoldTime = 0;
