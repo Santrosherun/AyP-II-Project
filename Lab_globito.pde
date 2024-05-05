@@ -30,7 +30,7 @@ int maxJumpForce = -20;
 boolean isJumping = false;
 // ^^^ VELOCIDAD DE SALTO y GRAVEDAD ^^^
 float realColissionBoxMult = 0.2;
-int mode = 6; // Controla el modo de juego actual
+int mode = 0; // Controla el modo de juego actual
 
 float xpos = 0, ypos = 0;
 float speed = 8;
@@ -101,6 +101,7 @@ AudioPlayer special_Coin;
 AudioPlayer windSound;
 AudioPlayer vidaExtra;
 AudioPlayer gameOverSound;
+AudioPlayer powerUp;
 // ^^^ Declarando variables de sonido ^^^
 
 Colissions playerColision;
@@ -122,6 +123,7 @@ void setup(){
   windSound = minim.loadFile("windSound.mp3");
   vidaExtra = minim.loadFile("vidaExtra.mp3");
   gameOverSound = minim.loadFile("gameOverSound.mp3");
+  powerUp = minim.loadFile("powerUp.mp3");
   size (1800, 900);
   
   backgroundImage_menu = loadImage("Main_menu.png");
@@ -343,7 +345,7 @@ void setup(){
   
   coins = new Coin[numeroDeMonedas];
   for (co = 1; co < numeroDeMonedas; co++) {
-        float x = random(600, 32752);
+        float x = random(600, 32000);
         float y = random(500, 700);
         coins[co] = new Coin(x, y, 100, 100);
     }
@@ -356,6 +358,7 @@ void draw(){
   song.play();
   println("X"+mouseX + "Y"+mouseY);
   println("back"+abs(backgroundX));
+  println(speed);
   switch(mode){
     case 0:
       drawMainMenu(); 
@@ -381,6 +384,9 @@ void draw(){
     case 7:
       drawStatistics();
       break;
+    case 8:
+      drawCredits();
+      break;
      default:
        println("No deberias ver esto");
        break;
@@ -391,13 +397,16 @@ void draw(){
 void mousePressed() {
   // Detecta clics del mouse y realiza acciones según el estado del juego
   if (mode == 0) { // Menu principal
-    if(mouseX > 85 && mouseX < 405 && mouseY > 380 && mouseY < 490){
+    if(mouseX > 85 && mouseX < 405 && mouseY > 380 && mouseY < 490){ // Jugar
       mode = 1;
       startTime = millis();
       f=0;
     }
     if(mouseX > 85 && mouseX < 630 && mouseY > 545 && mouseY < 650){
       mode = 4;
+    }
+    if(mouseX > 85 && mouseX < 625 && mouseY > 705 && mouseY < 820){
+      mode = 8;
     }
   } else if (mode == 1) { // Juego principal
      
@@ -481,6 +490,8 @@ void mousePressed() {
       resetGame();
       mode = 0;
     }
+  } else if(mode == 8){
+    
   }
   
 }
@@ -529,7 +540,7 @@ void drawGame(){
     // ^^^ Parpadear en rojo ^^^
     
     if (timePast >= lastIncreaseTime + increaseTime_m && !speedIncreased) { // Verificar que se debe incrementar la velocidad, solo una vez
-        speed += 0.5;
+        speed = speed + 0.5;
         lastIncreaseTime = timePast;
         speedIncreased = true;
         if (speedStat < speed){ // Comprobar cuál fue la velocidad más alta alcanzada
@@ -548,6 +559,7 @@ void drawGame(){
     if(xpos + abs(backgroundX) >= 31950){
       mode = 6;
     }
+    // ^^^ Darle la victoria al jugador ^^^
     textSize(50);
     text(nf(minutes, 2) + ":" + nf(seconds, 2) + ":" + nf(milliseconds, 3), width - 260, 70); // nf() se utiliza para formatear los números y asegurarse de que tengan el número adecuado de dígitos
     // ^^^ Pintar el temporizador en pantalla formateado a 2 decimales ^^^
@@ -644,7 +656,7 @@ void drawGame(){
       Platform plat = platforms[p]; // Creación de las plataformas
       plat.drawPlatform(); // Pintar las plataformas
        
-      if (ypos + loon_size >= plat.getY() && ypos + loon_size <= plat.getY() + plat.getHeight() && xpos - backgroundX + 100 >= plat.getX() && xpos - backgroundX + 90 <= plat.getX() + plat.getWidth()) {
+      if (ypos + loon_size >= plat.getY() && ypos + loon_size - 10 <= plat.getY() + plat.getHeight() && xpos - backgroundX + 100 >= plat.getX() && xpos - backgroundX + 90 <= plat.getX() + plat.getWidth()) {
           ypos = plat.getY() - loon_size; 
           Y_velocity = 0; 
           isJumping = false; 
@@ -822,13 +834,16 @@ void drawStatistics(){
   image(exitImage, 380, 745, 300, 100);
   fill(#0766D8);
   textSize(65);
-  text("Saltos:", 20, 350);
-  text(jumpNumber, 240, 350);
-  text("Velocidad máxima:" , 20, 450);
-  text(nf(speedStat, 0, 1), 550, 450);
+  text("Saltos:", 50, 350);
+  text(jumpNumber, 270, 350);
+  text("Velocidad máxima:" , 50, 450);
+  text(nf(speedStat, 0, 1), 580, 450);
+  image(endDecoration, 1000, 250, 600, 700);
+  
 }
 
 void resetGame() { // Todo lo que debe ser reiniciado después de una ejecucción del videojuego
+  song.rewind();
   xpos = 0;
   ypos = 0;
   backgroundX = 0;
@@ -838,7 +853,7 @@ void resetGame() { // Todo lo que debe ser reiniciado después de una ejecucció
   startTime = millis();
   
   for (int co = 1; co < numeroDeMonedas; co++) {
-    float x = random(600, 32752);
+    float x = random(600, 32000);
     float y = random(500, 700);
     coins[co] = new Coin(x, y, 100, 100);
   }
@@ -865,6 +880,10 @@ void resetGame() { // Todo lo que debe ser reiniciado después de una ejecucció
   shields = new Shield(5000);
   jumpNumber = 0;
   speedStat = 0;
+}
+
+void drawCredits(){
+  background(winBackground);
 }
 
 void drawHowToPlay() {
@@ -915,6 +934,9 @@ void keyPressed(){
   }
   if (keyCode == DOWN && shields.isActivated() == false) { // Botón del escudo 
     shields.activate();
+    powerUp.setGain(-8);
+    powerUp.play();
+    powerUp.rewind();
   }
   
 }
